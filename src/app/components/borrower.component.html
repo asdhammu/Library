@@ -1,0 +1,36 @@
+<h3> Add Borrower</h3>
+		<form (ngSubmit)="addBorrower()">
+            <div class="form-group">
+              <div>
+                <label>Name</label>
+          			<input type="text" [(ngModel)]="borrower.name" placeholder="name" name="name"><br/>
+              </div>
+              <div>
+                <label>SSN</label>
+                <input type="text" [(ngModel)]="borrower.ssn" placeholder="ssn" name="ssn"><br/>
+              </div>
+              <div>
+                <label>Address</label>
+                <input type="text" [(ngModel)]="borrower.address" placeholder="address" name="address"><br/>
+              </div>
+              <div>
+                <label>Phone</label>
+                <input type="text" [(ngModel)]="borrower.phone" placeholder="phone" name="phone"><br/>
+              </div>
+              <div>
+                <button  type="submit" class="btn btn-primary btn-block">Add</button>
+               </div>
+            </div>
+        </form>
+
+        <div *ngIf="restResponse" class="form-group">
+
+              <div [ngSwitch]=restResponse.success>
+                <b *ngSwitchCase="true">Borrower added successfully. Card Id is {{restResponse.result}}</b>
+                <b *ngSwitchDefault>{{restResponse.error}}</b>
+              </div>
+              <!-- <div *ngIf={{restResponse.success}}>
+              Compilation Result : {{restResponse.result}}
+              <br/>
+              {{restResponse.error}} -->
+        </div>

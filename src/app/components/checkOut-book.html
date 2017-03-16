@@ -1,0 +1,37 @@
+<h3> Add Loan for Book</h3>
+<form (ngSubmit)="addLoan()">
+  <div class="form-group">
+    <div>
+      <label>ISBN</label>
+      {{isbn}}
+      <!--<input type="text" [(ngModel)]="bookLoan.isbn" placeholder="{{isbn}}" value="{{isbn}}"><br/>-->
+    </div>
+    <div>
+      <label>Borrower ID</label>
+      <input type="text" [(ngModel)]="bookLoan.borrowerId" placeholder="BorrowerId" name="Id"><br/>
+    </div>
+    <!--<div>
+      <label>Address</label>
+      <input type="text" [(ngModel)]="borrower.address" placeholder="address" name="address"><br/>
+    </div>
+    <div>
+      <label>Phone</label>
+      <input type="text" [(ngModel)]="borrower.phone" placeholder="phone" name="phone"><br/>
+    </div>-->
+    <div>
+      <button  type="submit" class="btn btn-primary btn-block">Add Loan</button>
+    </div>
+  </div>
+</form>
+
+<div *ngIf="restResponse" class="form-group">
+
+  <div [ngSwitch]=restResponse.success>
+    <b *ngSwitchCase="true">Book Loan Successfully added.</b>
+    <b *ngSwitchDefault>{{restResponse.error}}</b>
+  </div>
+  <!-- <div *ngIf={{restResponse.success}}>
+  Compilation Result : {{restResponse.result}}
+  <br/>
+  {{restResponse.error}} -->
+</div>
