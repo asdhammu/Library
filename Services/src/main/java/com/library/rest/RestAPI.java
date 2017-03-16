@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.library.model.Borrower;
 import com.library.services.LibraryServices;
 
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @Controller
 @RestController
 public class RestAPI {
