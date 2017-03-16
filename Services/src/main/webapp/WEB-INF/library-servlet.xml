@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:mvc="http://www.springframework.org/schema/mvc"
+     xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">		
+		
+	<mvc:annotation-driven/>
+	<context:component-scan base-package="com.library" />
+		
+	<!-- <beans:bean class="org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter"/> -->
+ 	<bean  class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+ 	
+ 	
+   	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+   	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+   	<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"></bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	
+ 	
+ 	
+ 	<property name="messageConverters">
+	  <list>
+	    <ref bean="jacksonMessageConverter"/>
+	  </list>
+	</property>
+ 	</bean>
+ 	
+	<!-- <mvc:cors>
+		<mvc:mapping path="/**"
+		allowed-origins="http://localhost:3000, http://domain2.com"
+		allowed-methods="GET, PUT, POST"
+		allowed-headers="header1, header2, header3"
+		exposed-headers="header1, header2" allow-credentials="false"
+		max-age="123" />
+		<mvc:mapping path="/resources/**" allowed-origins="http://localhost:3000" />
+	</mvc:cors> -->
+ 	
+ 	
+ 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/library_managment" />
+		<property name="username" value="root" />
+		<property name="password" value="admin"/>
+	</bean>
+	<bean id="hibernate4AnnotatedSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.library.model.Author</value>
+				<value>com.library.model.Book</value>
+				<value>com.library.model.BookAuthor</value>
+				<value>com.library.model.BookLoan</value>
+				<value>com.library.model.Borrower</value>
+				<value>com.library.model.Fine</value>
+				
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+				<prop key="hibernate.show_sql">true</prop>				
+			</props>
+		</property>
+	
+	</bean>
+	
+	<bean id="libraryService" class="com.library.services.LibraryServicesImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory"></property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	
+ 	
+</beans>
