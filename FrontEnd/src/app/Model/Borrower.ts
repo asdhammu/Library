@@ -1,5 +1,7 @@
 export class Borrower{
 
+  public  cardId:string;
+
 	constructor(
 		public name: string,
 		public ssn: string,
@@ -7,5 +9,5 @@ export class Borrower{
 		public phone: string
 
 		){}
-	
+
 }

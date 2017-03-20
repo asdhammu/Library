@@ -15,7 +15,6 @@ import 'rxjs/add/operator/switchMap';
 })
 export class CheckoutBook implements OnInit {
 
-
   bookLoan = new BookLoan("", "");
 
   restResponse: RestResponse;

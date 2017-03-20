@@ -1,0 +1,51 @@
+<h3>Check In Book</h3>
+
+<form (ngSubmit)="searchToCheckIn()">
+  <div class="form-group">
+
+      <label>ISBN</label>
+      <input type="text" [(ngModel)]="checkInBook.isbn" placeholder="ISBN" name="ISBN">
+      <label>Borrower ID</label>
+      <input type="text" [(ngModel)]="checkInBook.cardId" placeholder="cardId" name="Card Id">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="checkInBook.name" placeholder="name" name="Name">
+      <button  type="submit" class="btn btn-primary btn-block">Search</button>
+
+  </div>
+</form>
+
+  <div *ngIf="searchResult">
+    <div [ngSwitch]="searchResult.length>0">
+    <!--{{searchResult.book}}-->
+      <b *ngSwitchCase="true">
+        <ul class="heroes">
+          <li *ngFor="let b of searchResult">
+            <div >
+              <div [ngSwitch]="b.cover.length>0">
+                <b *ngSwitchCase="true"><span><img src="{{b.cover}}"/></span></b>
+                <b *ngSwitchDefault><span><img src="no-image-found.jpg"/></span></b>
+              </div>
+              <span class="badge">{{b.title}}</span>
+              <span class="badge">ISBN: {{b.isbn}}</span>
+              <!--<span class="badge"> Author:
+                   <span *ngFor="let a of b.author">
+                       {{a.name}},
+                   </span>
+              </span>-->
+
+              <span [ngSwitch]="b.available">
+                      <b *ngSwitchCase="true"><span class="avail">Available</span></b>
+                      <b *ngSwitchDefault><span><span class="notAvail">Not Available</span></span></b>
+              </span>
+            </div>
+
+            <span><button type="submit" (click)="onSubmit(b.isbn,b.borrower.cardId)">CheckIn</button></span>
+
+          </li>
+
+
+        </ul>
+      </b>
+      <b *ngSwitchCase="false">No Books are checked out for given Query.</b>
+    </div>
+  </div>

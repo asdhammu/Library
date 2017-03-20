@@ -1,47 +1,25 @@
-<h3>Check In Book</h3>
-
-<form (ngSubmit)="searchToCheckIn()">
+<h3> Add Loan for Book</h3>
+<form (ngSubmit)="checkInBook()">
   <div class="form-group">
-
+    <div>
       <label>ISBN</label>
-      <input type="text" [(ngModel)]="checkInBook.isbn" placeholder="ISBN" name="ISBN">
+      {{isbn}}
+    </div>
+    <div>
       <label>Borrower ID</label>
-      <input type="text" [(ngModel)]="checkInBook.cardId" placeholder="cardId" name="Card Id">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="checkInBook.name" placeholder="name" name="Name">
-      <button  type="submit" class="btn btn-primary btn-block">Search</button>
+      {{cardId}}
+    </div>
 
+    <div>
+      <button  type="submit" class="btn btn-primary btn-block">Check In</button>
+    </div>
   </div>
 </form>
 
-<div *ngIf="searchResult">
-  <!--{{searchResult.book}}-->
-  <ul class="heroes">
-    <li *ngFor="let b of searchResult">
-      <div >
-        <div [ngSwitch]="b.cover.length>0">
-          <b *ngSwitchCase="true"><span><img src="{{b.cover}}"/></span></b>
-          <b *ngSwitchDefault><span><img src="no-image-found.jpg"/></span></b>
-        </div>
-        <span class="badge">{{b.title}}</span>
-        <span class="badge">ISBN: {{b.isbn}}</span>
-        <span class="badge"> Author:
-             <span *ngFor="let a of b.author">
-                 {{a.name}},
-             </span>
-             </span>
+<div *ngIf="restResponse" class="form-group">
 
-        <span [ngSwitch]="b.available">
-                <b *ngSwitchCase="true"><span class="avail">Available</span></b>
-                <b *ngSwitchDefault><span><span class="notAvail">Not Available</span></span></b>
-             </span>
-      </div>
-
-      <span><button type="submit" (click)="onSubmit(b.isbn)">CheckIn</button></span>
-
-    </li>
-
-
-  </ul>
-
+  <div [ngSwitch]=restResponse.success>
+    <b *ngSwitchCase="true">Book Checked In Successfully.</b>
+    <b *ngSwitchDefault>{{restResponse.error}}</b>
+  </div>
 </div>

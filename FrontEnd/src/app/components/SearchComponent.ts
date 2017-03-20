@@ -1,8 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {SearchResult} from "../Model/SearchResult";
 import {LibraryService} from "../services/library.services";
 import {Router} from "@angular/router";
-
 @Component({
 	selector: '<search-component>',
 
@@ -11,12 +10,15 @@ import {Router} from "@angular/router";
 
 		<form (ngSubmit)="search()">
 			<div class="form-group">
-				<input type="text" size="75" class="form-control" placeholder="author,isbn,bookname" [(ngModel)]="query" name="Search">
+          <input type="text" size="75" class="form-control" placeholder="author,isbn,bookname" [(ngModel)]="query" name="Search">
 				<button type="submit" class="btn btn-primary btn-block">Search</button>	
 			</div>
 		</form>
 		
 		<div *ngIf="searchResult">
+		   Total Result : {{searchResult.length}}
+		   <div [ngSwitch]="searchResult.length>0">
+       <b *ngSwitchCase="true">
        <!--{{searchResult.book}}-->
        <ul class="heroes">
         <li *ngFor="let b of searchResult">
@@ -46,6 +48,9 @@ import {Router} from "@angular/router";
              
       </ul>
               
+      </b>
+      <b *ngSwitchDefault>No Results found.</b>
+      </div>
     </div>
 		
 	 `,
@@ -67,7 +72,7 @@ export class SearchComponent{
 
   search(): void{
       this.libraryService.search(this.query).then(result=>this.searchResult = result);
-      console.log(this.searchResult);
+     // console.log(this.searchResult);
 
 	}
 

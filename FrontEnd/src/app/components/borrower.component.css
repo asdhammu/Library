@@ -124,6 +124,19 @@ button:disabled {
   right:279px
 
 }
+table, th, td {
+
+  top:10px;
+  position:relative;
+}
+@media print
+{
+  thead {display: table-header-group;}
+}
+.selectedtab{
+  position: relative;
+  padding: 10px;
+}
 /*
 Copyright 2017 Google Inc. All Rights Reserved.
 Use of this source code is governed by an MIT-style license that

@@ -58,20 +58,75 @@ export class LibraryService {
 
   }
 
-  searchToCheckIn(checkIn:CheckInBookModel):Promise<any>{
-
-    let data = {"isbn":checkIn.isbn,
-    "name":checkIn.name,
-    "cardId":checkIn.cardId};
+  addOrUpdateFine():Promise<any>{
 
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
 
-    return this.http.post(this.apiURL + "searchToCheckIn", JSON.stringify(data), options).toPromise()
+    return this.http.get(this.apiURL + "addOrUpdateFine", options).toPromise()
       .then(response =>response.json())
       .catch(this.handleError);
 
   }
+
+  searchToCheckIn(checkIn:CheckInBookModel):Promise<any>{
+
+    let data = {"isbn":checkIn.isbn,"name":checkIn.name,"cardId":checkIn.cardId};
+
+
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.post(this.apiURL + "searchCheckedInBooks", JSON.stringify(data), options).toPromise()
+      .then(response =>response.json())
+      .catch(this.handleError);
+
+  }
+
+
+  checkIn(isbn:string,cardId:string):Promise<any>{
+
+    let data = {"isbn":isbn,"cardId":cardId};
+
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.post(this.apiURL + "checkInBook", JSON.stringify(data), options).toPromise()
+      .then(response =>response.json())
+      .catch(this.handleError);
+
+  }
+
+  showFines():Promise<any>{
+    //let data = {"query":paid};
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.get(this.apiURL + "getAllFines", options).toPromise()
+      .then(response =>response.json())
+      .catch(this.handleError);
+  }
+
+  payFine(cardId:number):Promise<any>{
+    let data = {"query":cardId};
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.post(this.apiURL + "payFine", JSON.stringify(data), options).toPromise()
+      .then(response =>response.json())
+      .catch(this.handleError);
+  }
+
+  getFineForCardId(cardId:number, paid:string):Promise<any>{
+    let data = {"query":cardId,"paid":paid};
+    let headers = new Headers({'Content-Type': 'application/json'});
+    let options = new RequestOptions({headers: headers});
+
+    return this.http.post(this.apiURL + "getFineForCardId", JSON.stringify(data), options).toPromise()
+      .then(response =>response.json())
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     console.error("error occurred", error);
     return Promise.reject(error.message || error);
