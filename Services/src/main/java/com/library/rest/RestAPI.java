@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.library.model.Borrower;
+import com.library.model.Fine;
 import com.library.services.LibraryServices;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @Controller
 @RestController
 public class RestAPI {
@@ -53,13 +55,41 @@ public class RestAPI {
 
 	}
 
-	@RequestMapping(value = "/checkInBook", method = RequestMethod.POST)
+	@RequestMapping(value = "/searchCheckedInBooks", method = RequestMethod.POST)
 	public ResponseEntity<List<SearchResult>> searchToCheckIn(@RequestBody CheckInBook book) {
 
-		return new ResponseEntity<List<SearchResult>>(libraryServices.checkInBookResult(book), HttpStatus.OK);
+		return new ResponseEntity<List<SearchResult>>(libraryServices.searchCheckedInBooks(book), HttpStatus.OK);
 
 	}
 
+	@RequestMapping(value = "/checkInBook", method = RequestMethod.POST)
+	public ResponseEntity<RestResponse> checkInBook(@RequestBody CheckInBook book) {
+
+		return new ResponseEntity<RestResponse>(libraryServices.checkInBook(book), HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value="/addOrUpdateFine",method=RequestMethod.GET)
+	public ResponseEntity<RestResponse> addOrUpdateFine(){
+		
+		return new ResponseEntity<RestResponse>(libraryServices.addFine(),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/getAllFines",method = RequestMethod.GET)
+	public ResponseEntity<List<FineResponse>> getAllFines(){		
+		return new ResponseEntity<List<FineResponse>>(libraryServices.getAllFines(),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/payFine",method = RequestMethod.POST)
+	public ResponseEntity<RestResponse> payFine(@RequestBody SearchQuery paid){		
+		return new ResponseEntity<RestResponse>(libraryServices.payFine(Integer.parseInt(paid.getQuery())),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/getFineForCardId",method = RequestMethod.POST)
+	public ResponseEntity<List<Fine>> getFineForCardId(@RequestBody SearchQuery query){		
+		return new ResponseEntity<List<Fine>>(libraryServices.getFineForCardId(query),HttpStatus.OK);
+	}
+	
 	public LibraryServices getLibraryServices() {
 		return libraryServices;
 	}

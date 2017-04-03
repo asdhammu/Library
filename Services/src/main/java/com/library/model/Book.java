@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -39,8 +38,9 @@ public class Book {
 	@JsonBackReference
 	private List<BookAuthor> author;
 	
-	@OneToOne(mappedBy="book", cascade = CascadeType.ALL)
-	private BookLoan bookLoan;
+	@OneToMany(mappedBy="book", cascade = CascadeType.ALL)
+	@JsonBackReference
+	private List<BookLoan> bookLoan;
 	
 	public List<BookAuthor> getAuthor() {
 		return author;
@@ -78,18 +78,17 @@ public class Book {
 	public void setPages(String pages) {
 		this.pages = pages;
 	}
-	public BookLoan getBookLoan() {
-		return bookLoan;
-	}
-	public void setBookLoan(BookLoan bookLoan) {
-		this.bookLoan = bookLoan;
-	}
 	public boolean isAvailable() {
 		return available;
 	}
 	public void setAvailable(boolean available) {
 		this.available = available;
 	}
-	
+	public List<BookLoan> getBookLoan() {
+		return bookLoan;
+	}
+	public void setBookLoan(List<BookLoan> bookLoan) {
+		this.bookLoan = bookLoan;
+	}
 	
 }

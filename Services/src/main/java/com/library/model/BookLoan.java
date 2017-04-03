@@ -11,21 +11,26 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name="book_loan")
-public class BookLoan {
+public class BookLoan{
 	
 	@Id
 	@GeneratedValue
 	@Column(name="loan_id")
 	private int loanId;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="isbn")
+	@JsonManagedReference
 	private Book book;
 	
 	@ManyToOne
 	@JoinColumn(name="card_id")
+	@JsonManagedReference
 	private Borrower borrower;
 	
 	@Column(name="date_out")
@@ -37,8 +42,8 @@ public class BookLoan {
 	@Column(name="due_date")
 	private Date dueDate;
 	
-	
 	@OneToOne(mappedBy="bookLoan")
+	@JsonBackReference
 	private Fine fine;
 	
 	
@@ -88,6 +93,7 @@ public class BookLoan {
 	public void setBorrower(Borrower borrower) {
 		this.borrower = borrower;
 	}
+	
 	public Fine getFine() {
 		return fine;
 	}
@@ -95,6 +101,5 @@ public class BookLoan {
 		this.fine = fine;
 	}
 	
-	
-	
 }
+

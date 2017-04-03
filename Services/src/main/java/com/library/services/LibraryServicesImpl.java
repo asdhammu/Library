@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -24,6 +25,7 @@ import com.library.model.Borrower;
 import com.library.model.Fine;
 import com.library.rest.BookLoanRequest;
 import com.library.rest.CheckInBook;
+import com.library.rest.FineResponse;
 import com.library.rest.RestResponse;
 import com.library.rest.SearchQuery;
 import com.library.rest.SearchResult;
@@ -89,88 +91,227 @@ public class LibraryServicesImpl implements LibraryServices {
 
 	}
 
-	public void addFine(Fine fine) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void updateFine(Fine fine) {
-		// TODO Auto-generated method stub
-
+	public List<FineResponse> getAllFines(){
+		
+		//System.out.println("Paid " + paid);
+		Session session = this.sessionFactory.openSession();
+		//Transaction transaction = session.beginTransaction();
+		
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("select b.card_id , sum(fine_amt) from fine f ,book_loan b where b.loan_id= f.loan_id and f.paid=0");
+		
+		/*if(paid){
+			builder.append(" and f.paid=1");
+		
+		}*/
+		
+		builder.append(" group by b.card_id");
+		
+		Query query = session.createSQLQuery(builder.toString());
+		
+		List<Object[]> object = query.list();
+		
+		List<FineResponse> fineResponses = new ArrayList<FineResponse>();
+		
+		for(Object[] object2:object){
+			FineResponse fineResponse = new FineResponse();
+			fineResponse.setCardId((Integer)object2[0]);
+			fineResponse.setAmount(Double.toString((Double)object2[1]));
+			
+			fineResponses.add(fineResponse);
+		}
+		
+		session.close();
+		
+		
+		return fineResponses;
 	}
 	
-	public List<SearchResult> checkInBookResult(CheckInBook book){
+	public RestResponse addFine() {
+
+		RestResponse response = new RestResponse();
+		Session session = this.sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+
+		try {
+			String paramString = "from BookLoan where dateIn=null";
+			//String paramString = "select * from book_loan where date_in is null";
+			Query query = session.createQuery(paramString);
+
+			List<BookLoan> bookLoans = query.list();
+
+			Fine fine = null;
+			Date date = new Date();
+			for (BookLoan bookLoan : bookLoans) {
+
+				if (bookLoan.getDueDate().before(date)) {
+
+					
+					if(bookLoan.getFine()==null){
+						fine = new Fine(bookLoan);
+					}else{
+						fine = bookLoan.getFine();
+					}
+					
+					long diff = date.getTime() - bookLoan.getDueDate().getTime();
+
+					long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+					fine.setFineAmount(Double.toString(days * 0.25));
+
+					session.saveOrUpdate(fine);
+				}
+
+			}
+			transaction.commit();
+			response.setSuccess(true);
+			response.setResult("Fine updated successfully");
+
+		} catch (Exception e) {
+			transaction.rollback();
+			response.setError("Error while updating. Try Again");
+			response.setSuccess(false);
+		}
+
+		session.close();
+
+		return response;
+	}
+
+	public RestResponse payFine(int cardId) {
+
+		RestResponse response = new RestResponse();
+		Session session = this.sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+		String paramString = "from Fine where fineId="+ cardId;// + " and dateIn !=null";
+		Query query = session.createQuery(paramString);
 		
-		//System.out.println("Card id : " + book.getCardId() + " ID " + book.getCardID()  + " name" + book.getName());
-		if(book.getIsbn().length()>0 && book.getIsbn().length()==13){
-			SearchQuery query = new SearchQuery();
-			query.setQuery(book.getIsbn());
-			List<SearchResult> result = new ArrayList<SearchResult>();
+		Fine fine = (Fine) query.uniqueResult();
+		
+		if(fine!=null && fine.getBookLoan().getDateIn()!=null){
+			fine.setPaid(true);
+			session.save(fine);
+			transaction.commit();
+			response.setResult("Fine paid successfully");
 			
-			for(SearchResult result2:this.search(query)){
-				if(!result2.isAvailable()){
-					result.add(result2);
-				}
-			}
-			
-			return result;
 		}else{
-			
-			String name = book.getName();
-			String cardId = book.getCardId();
-			
-			Session session = this.sessionFactory.openSession();
-			//Transaction transaction = session.beginTransaction();
-			String queryString = "";
-			if(name.length()>0 && cardId.length()>0){
-				queryString = "from Borrower where cardId="+ Integer.parseInt(cardId)+" or bName like '%"+ name +"%'";
-			}else if(cardId.length()==0 && name.length()>0){
-				queryString = "from Borrower where bName like '%" + name + "%'";
-			}else if(cardId.length()>0 && name.length()==0){
-				queryString = "from Borrower where cardId=" + Integer.parseInt(cardId);
-			}
-			
-			Query query = session.createQuery(queryString);
-			
-			Object object = query.list();
-			
-			List<SearchResult> list = new ArrayList<SearchResult>();
-			
-			if(object==null){
-				return list;
-			}
-			List<Borrower> borrower = (List<Borrower>) object;
-			
-			
-			for(Borrower borrower2:borrower){
-				
-				List<BookLoan> bookLoans = borrower2.getBookLoans();				
-				
-				for(BookLoan bookLoan:bookLoans){
-					SearchResult result = new SearchResult();
-					
-					result.setCover(bookLoan.getBook().getCover());
-					result.setISBN(bookLoan.getBook().getISBN());
-					result.setTitle(bookLoan.getBook().getTitle());
-					
-					list.add(result);
-				}
-				
-			}
-			
-			session.close();
-			return list;
+			response.setResult("Book is not checked in");
 		}
 		
 		
-		
+		session.close();
+		 
+		return response;
+	}
+
+	public RestResponse checkInBook(CheckInBook book) {
+
+		RestResponse response = new RestResponse();
+		Session session = this.sessionFactory.openSession();
+		Transaction transaction = session.beginTransaction();
+		try {
+
+			String paramString = "from BookLoan where book.ISBN='" + book.getIsbn() + "' and borrower.cardId="
+					+ Integer.parseInt(book.getCardId());
+			Query query = session.createQuery(paramString);
+
+			BookLoan bookLoan = (BookLoan) query.uniqueResult();
+
+			bookLoan.setDateIn(new Date());
+
+			bookLoan.getBook().setAvailable(true);
+
+			session.update(bookLoan);
+			transaction.commit();
+
+			response.setSuccess(true);
+			response.setResult("Book Checked In Succesfully");
+		} catch (Exception exception) {
+
+			response.setSuccess(false);
+			response.setError("Error Occurred. Try after some time");
+			transaction.rollback();
+		}
+
+		session.close();
+
+		return response;
+
+	}
+
+	public List<SearchResult> searchCheckedInBooks(CheckInBook book) {
+
+		// System.out.println("Card id : " + book.getCardId() + " ID " +
+		// book.getCardID() + " name" + book.getName());
+		if (book.getIsbn().length() > 0 && book.getIsbn().length() == 13) {
+			SearchQuery query = new SearchQuery();
+			query.setQuery(book.getIsbn());
+			List<SearchResult> result = new ArrayList<SearchResult>();
+
+			for (SearchResult result2 : this.search(query)) {
+				if (!result2.isAvailable()) {
+					result.add(result2);
+				}
+			}
+
+			return result;
+		} else {
+
+			String name = book.getName();
+			String cardId = book.getCardId();
+
+			Session session = this.sessionFactory.openSession();
+			// Transaction transaction = session.beginTransaction();
+			String queryString = "";
+			if (name.length() > 0 && cardId.length() > 0) {
+				queryString = "from Borrower where cardId=" + Integer.parseInt(cardId) + " or bName like '%" + name
+						+ "%'";
+			} else if (cardId.length() == 0 && name.length() > 0) {
+				queryString = "from Borrower where bName like '%" + name + "%'";
+			} else if (cardId.length() > 0 && name.length() == 0) {
+				queryString = "from Borrower where cardId=" + Integer.parseInt(cardId);
+			}
+
+			Query query = session.createQuery(queryString);
+
+			Object object = query.list();
+
+			List<SearchResult> list = new ArrayList<SearchResult>();
+
+			if (object == null) {
+				return list;
+			}
+			List<Borrower> borrower = (List<Borrower>) object;
+
+			for (Borrower borrower2 : borrower) {
+
+				List<BookLoan> bookLoans = borrower2.getBookLoans();
+
+				for (BookLoan bookLoan : bookLoans) {
+					SearchResult result = new SearchResult();
+					if (bookLoan.getDateIn() == null) {
+						result.setCover(bookLoan.getBook().getCover());
+						result.setISBN(bookLoan.getBook().getISBN());
+						result.setTitle(bookLoan.getBook().getTitle());
+						result.setBorrower(borrower2);
+						list.add(result);
+					}
+
+				}
+
+			}
+
+			session.close();
+			return list;
+		}
+
 	}
 
 	public RestResponse addBookLoan(BookLoanRequest bookLoanRequest) {
 
 		System.out.println(bookLoanRequest.getBorrowerId());
 		System.out.println(bookLoanRequest.getIsbn());
-		
+
 		String isbn = bookLoanRequest.getIsbn();
 		String borrowerId = bookLoanRequest.getBorrowerId();
 		RestResponse response = new RestResponse();
@@ -191,11 +332,15 @@ public class LibraryServicesImpl implements LibraryServices {
 
 			Borrower borrower = (Borrower) object;
 
-			if (borrower.getBookLoans().size() > 2) {
+			String loanQuery = "from BookLoan where borrower=" + Integer.parseInt(borrowerId) + " and dateIn IS null";
+			Query query2 = session.createQuery(loanQuery);
+			List<BookLoan> bookLoans = query2.list();
+			
+			if (bookLoans.size() > 2) {
 				response.setError("3 Book have been issued to the borrower");
 				response.setSuccess(false);
 
-			} else {
+			} else {	
 
 				try {
 					String bookQuery = "from Book where ISBN=" + isbn;
@@ -212,22 +357,22 @@ public class LibraryServicesImpl implements LibraryServices {
 					} else {
 
 						BookLoan bookLoan = new BookLoan(book, borrower);
-						
+
 						Date date = new Date();
-						bookLoan.setDateOut(date);						
+						bookLoan.setDateOut(date);
 						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(date);            
+						calendar.setTime(date);
 						calendar.add(Calendar.DAY_OF_YEAR, 14);
-						
+
 						bookLoan.setDueDate(calendar.getTime());
-						
+
 						session.persist(bookLoan);
 						response.setResult("Added Succesfull");
 						response.setSuccess(true);
 
 						book.setAvailable(false);
 						session.update(book);
-						
+
 						transaction.commit();
 					}
 
@@ -236,11 +381,10 @@ public class LibraryServicesImpl implements LibraryServices {
 					response.setError("Issue in Database");
 					transaction.rollback();
 
-				} 
+				}
 			}
 		}
 
-		
 		session.close();
 
 		return response;
@@ -441,6 +585,39 @@ public class LibraryServicesImpl implements LibraryServices {
 
 		System.out.println("Book Query " + bookNameQuery);
 		System.out.println("NamedQuery " + authorQuery);
+	}
+
+	
+	public List<Fine> getFineForCardId(SearchQuery searchQuery) {
+	
+		
+		boolean isPaid = Boolean.parseBoolean(searchQuery.getPaid());
+		
+		System.out.println("Ispaid " + isPaid);
+		Session session = this.sessionFactory.openSession();
+		String param = "from BookLoan where borrower.cardId="+ Integer.parseInt(searchQuery.getQuery());
+				
+		Query query = session.createQuery(param);
+		
+		List<BookLoan> bookLoans = query.list();
+		
+		List<Fine> fines = new ArrayList<Fine>();
+		
+		
+		for(BookLoan bookLoan :bookLoans){
+			if(bookLoan.getFine()!=null){
+				if(isPaid && bookLoan.getFine().isPaid()){
+					fines.add(bookLoan.getFine());
+				}
+				if(!isPaid && !bookLoan.getFine().isPaid()){
+					fines.add(bookLoan.getFine());
+				}
+			}			
+		}
+		
+		session.close();
+		
+		return fines;
 	}
 
 }

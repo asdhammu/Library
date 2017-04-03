@@ -3,6 +3,7 @@ package com.library.rest;
 import java.util.List;
 
 import com.library.model.Author;
+import com.library.model.Borrower;
 
 public class SearchResult {
 
@@ -19,6 +20,16 @@ public class SearchResult {
 	private boolean available;
 
 	private List<Author> author;
+
+	private Borrower borrower;
+
+	public Borrower getBorrower() {
+		return borrower;
+	}
+
+	public void setBorrower(Borrower borrower) {
+		this.borrower = borrower;
+	}
 
 	public String getISBN() {
 		return ISBN;
