@@ -75,6 +75,11 @@
 			<version>${hibernate.version}</version>
 	</dependency>
 	<dependency>
+    		<groupId>edu.stanford.nlp</groupId>
+    		<artifactId>stanford-corenlp</artifactId>
+    		<version>3.8.0</version>
+	</dependency>
+	<dependency>
 	    <groupId>com.fasterxml.jackson.core</groupId>
 	    <artifactId>jackson-core</artifactId>
 	    <version>2.4.1</version>
