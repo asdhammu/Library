@@ -21,7 +21,6 @@ export class CheckInBook implements OnInit {
   restResponse: RestResponse;
 
   constructor(private route: ActivatedRoute,
-              //private param: Params,
               private libraryService: LibraryService) {
   }
 
@@ -34,14 +33,8 @@ export class CheckInBook implements OnInit {
 
   }
 
-
   checkInBook(): void {
-
-    this.libraryService.checkIn(this.isbn,this.cardId).then(result => this.restResponse = result);
-
-    console.log(this.restResponse);
-
+    this.libraryService.checkIn(this.isbn,this.cardId).then(result => this.restResponse = result);   
   }
-
 
 }
