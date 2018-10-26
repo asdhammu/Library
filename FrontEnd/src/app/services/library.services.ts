@@ -16,8 +16,7 @@ export class LibraryService {
 
   private apiURL = "http://localhost:8080/LibraryManagement/";
 
-  addBorrower(borrower: Borrower): Promise<any> {
-    //alert(borrower.name);
+  addBorrower(borrower: Borrower): Promise<any> {    
     let test_this = {
       "name": borrower.name,
       "ssn": borrower.ssn,
@@ -27,8 +26,7 @@ export class LibraryService {
 
 
     let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-    //this.payload.data = data;
+    let options = new RequestOptions({headers: headers});    
     return this.http.post(this.apiURL + "addBorrower", JSON.stringify(test_this), options).toPromise()
       .then(response => response.json())
       .catch(this.handleError);
@@ -97,8 +95,7 @@ export class LibraryService {
 
   }
 
-  showFines():Promise<any>{
-    //let data = {"query":paid};
+  showFines():Promise<any>{    
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
 
