@@ -14,15 +14,11 @@ export class BorrowerComponent{
 
 	borrower = new Borrower("", "","","");
 
-    restResponse: RestResponse;
-    //test: string;
+    restResponse: RestResponse;    
     constructor(
     	private libraryService: LibraryService){}
 
     addBorrower():void{
-
-    	//alert(this.borrower.address);
     	this.libraryService.addBorrower(this.borrower).then(result => this.restResponse = result);
-
      }
 }
