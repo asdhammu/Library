@@ -86,21 +86,9 @@ export class FineComponent{
       this.showForm=true;
       this.restResponse = null;
       this.libraryService.showFines().then(response => this.fineResponse=response);
-  }
-
-  /*fines():void{
-    this.restResponse = null;
-
-  }
-
-  onChange(s:string) {
-    this.libraryService.showFines(this.selectedValue).then(response => this.fineResponse=response);
-  }
-*/
+  } 
   pay(cardId:number){
-      this.router.navigate(['/pay',cardId]);
-      //this.libraryService.payFine(cardId).then(response => this.restResponse1=response);
+      this.router.navigate(['/pay',cardId]);      
   }
-
 
 }
