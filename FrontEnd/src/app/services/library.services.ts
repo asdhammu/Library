@@ -1,12 +1,12 @@
 import {Injectable}     from '@angular/core';
 import {Http,Headers, RequestOptions} from '@angular/http';
 import 'rxjs/Rx';
-import {Borrower} from '../Model/Borrower';
+import {Borrower} from '../model/Borrower';
 // Import RxJs required methods
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
-import {BookLoan} from "../Model/BookLoan";
-import {CheckInBookModel} from "../Model/CheckInBookModel";
+import {BookLoan} from "../model/BookLoan";
+import {CheckInBookModel} from "../model/CheckInBookModel";
 
 @Injectable()
 export class LibraryService {
@@ -16,7 +16,7 @@ export class LibraryService {
 
   private apiURL = "http://localhost:8080/LibraryManagement/";
 
-  addBorrower(borrower: Borrower): Promise<any> {    
+  addBorrower(borrower: Borrower): Promise<any> {
     let test_this = {
       "name": borrower.name,
       "ssn": borrower.ssn,
@@ -26,7 +26,7 @@ export class LibraryService {
 
 
     let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});    
+    let options = new RequestOptions({headers: headers});
     return this.http.post(this.apiURL + "addBorrower", JSON.stringify(test_this), options).toPromise()
       .then(response => response.json())
       .catch(this.handleError);
@@ -95,7 +95,7 @@ export class LibraryService {
 
   }
 
-  showFines():Promise<any>{    
+  showFines():Promise<any>{
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
 

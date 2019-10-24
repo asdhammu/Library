@@ -1,12 +1,11 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
-import {Borrower} from '../Model/Borrower';
-import {LibraryService} from '../services/library.services';
-import {RestResponse} from '../Model/RestResponse';
+import {Borrower} from '../../model/Borrower';
+import {LibraryService} from '../../services/library.services';
+import {RestResponse} from '../../model/RestResponse';
 @Component({
 	selector: 'borrower-component',
-	templateUrl: 'app/components/borrower.component.html',
-	styleUrls: [ 'app/components/borrower.component.css' ],
-	providers: [LibraryService]
+	templateUrl: 'app/operation/borrower/borrower.component.html',
+	styleUrls: [ 'app/operation/borrower/borrower.component.css' ]
 })
 
 export class BorrowerComponent{
@@ -14,7 +13,7 @@ export class BorrowerComponent{
 
 	borrower = new Borrower("", "","","");
 
-    restResponse: RestResponse;    
+    restResponse: RestResponse;
     constructor(
     	private libraryService: LibraryService){}
 

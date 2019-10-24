@@ -2,18 +2,17 @@
  * Created by asdha on 3/15/2017.
  */
 import {Component, OnInit} from '@angular/core';
-import {BookLoan} from "../Model/BookLoan";
-import {LibraryService} from "../services/library.services";
-import {RestResponse} from "../Model/RestResponse";
+import {BookLoan} from "../../model/BookLoan";
+import {LibraryService} from "../../services/library.services";
+import {RestResponse} from "../../model/RestResponse";
 import {ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
 @Component({
   selector: 'checkout-book',
-  templateUrl: 'app/components/checkOut-book.html',
-  styleUrls: [ 'app/components/borrower.component.css' ],
-  providers:[LibraryService]
+  templateUrl: 'app/user/check-out/checkOutBook.component.html',
+  styleUrls: [ 'app/operation/borrower/borrower.component.css' ]
 })
-export class CheckoutBook implements OnInit {
+export class CheckOutBookComponent implements OnInit {
 
   bookLoan = new BookLoan("", "");
 

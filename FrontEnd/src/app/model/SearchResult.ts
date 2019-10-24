@@ -1,4 +1,4 @@
-import {Author} from '../Model/Author'
+import {Author} from './/Author'
 import {Borrower} from "./Borrower";
 /**
  * Created by asdha on 3/14/2017.

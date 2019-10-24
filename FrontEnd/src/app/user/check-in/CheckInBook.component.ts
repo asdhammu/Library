@@ -2,18 +2,17 @@
  * Created by asdha on 3/15/2017.
  */
 import {Component, OnInit} from '@angular/core';
-import {LibraryService} from "../services/library.services";
-import {RestResponse} from "../Model/RestResponse";
+import {LibraryService} from "../../services/library.services";
+import {RestResponse} from "../../model/RestResponse";
 import {ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
-import {CheckInBookModel} from "../Model/CheckInBookModel";
+import {CheckInBookModel} from "../../model/CheckInBookModel";
 @Component({
   selector: 'checkIn-book',
-  templateUrl: 'app/components/checkIn-book.html',
-  styleUrls: [ 'app/components/borrower.component.css' ],
-  providers:[LibraryService]
+  templateUrl: 'app/user/check-in/checkInBook.component.html',
+  styleUrls: [ 'app/operation/borrower/borrower.component.css' ]
 })
-export class CheckInBook implements OnInit {
+export class CheckInBookComponent implements OnInit {
 
 
   checkInBookModel = new CheckInBookModel("","","");
@@ -34,7 +33,7 @@ export class CheckInBook implements OnInit {
   }
 
   checkInBook(): void {
-    this.libraryService.checkIn(this.isbn,this.cardId).then(result => this.restResponse = result);   
+    this.libraryService.checkIn(this.isbn,this.cardId).then(result => this.restResponse = result);
   }
 
 }

@@ -23,7 +23,7 @@
             <div >
               <div [ngSwitch]="b.cover.length>0">
                 <b *ngSwitchCase="true"><span><img src="{{b.cover}}"/></span></b>
-                <b *ngSwitchDefault><span><img src="no-image-found.jpg"/></span></b>
+                <b *ngSwitchDefault><span><img src="../../../assets/no-image-found.jpg"/></span></b>
               </div>
               <span class="badge">{{b.title}}</span>
               <span class="badge">ISBN: {{b.isbn}}</span>
