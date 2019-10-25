@@ -2,14 +2,14 @@ package com.library.services;
 
 import java.util.List;
 
-import com.library.model.Borrower;
-import com.library.model.Fine;
-import com.library.rest.BookLoanRequest;
-import com.library.rest.CheckInBook;
-import com.library.rest.FineResponse;
-import com.library.rest.RestResponse;
-import com.library.rest.SearchQuery;
-import com.library.rest.SearchResult;
+import com.library.entity.Borrower;
+import com.library.entity.Fine;
+import com.library.modal.BookLoanRequest;
+import com.library.modal.CheckInBook;
+import com.library.modal.FineResponse;
+import com.library.modal.RestResponse;
+import com.library.modal.SearchQuery;
+import com.library.modal.SearchResult;
 
 public interface LibraryServices {
 

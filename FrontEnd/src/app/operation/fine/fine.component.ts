@@ -11,7 +11,7 @@ import {Router} from "@angular/router";
 
   selector:"fine",
   templateUrl: './fine.component.html',
-  styleUrls: [ 'app/operation/borrower/borrower.component.css' ]
+  styleUrls: [ './fine.component.css' ]
 })
 
 export class FineComponent{
@@ -21,6 +21,8 @@ export class FineComponent{
   showForm:boolean;
   fineResponse: FineResponse[];
   restResponse1:RestResponse;
+  error: string;
+  isError: boolean;
   constructor(
     public router:Router,
     public libraryService: LibraryService
@@ -30,13 +32,20 @@ export class FineComponent{
   addOrUpdateFines():void{
     this.showForm = false;
     this.fineResponse = null;
-    this.libraryService.addOrUpdateFine().then(response => this.restResponse = response);
+    this.libraryService.addOrUpdateFine().subscribe(response => this.restResponse = response);
   }
 
   showFines():void{
       this.showForm=true;
+      this.error = '';
+      this.isError = false;
       this.restResponse = null;
-      this.libraryService.showFines().then(response => this.fineResponse=response);
+      this.libraryService.showFines().subscribe(response => this.fineResponse=response,
+        ( ) => {
+            this.isError = true;
+            this.error = 'Error has occurred. Please try after some time';
+        });
+
   }
   pay(cardId:number){
       this.router.navigate(['/pay',cardId]);

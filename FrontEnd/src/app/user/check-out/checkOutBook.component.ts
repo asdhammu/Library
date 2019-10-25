@@ -9,8 +9,8 @@ import {ActivatedRoute, Params} from "@angular/router";
 import 'rxjs/add/operator/switchMap';
 @Component({
   selector: 'checkout-book',
-  templateUrl: 'app/user/check-out/checkOutBook.component.html',
-  styleUrls: [ 'app/operation/borrower/borrower.component.css' ]
+  templateUrl: './checkOutBook.component.html',
+  styleUrls: [ './checkOutBook.component.css' ]
 })
 export class CheckOutBookComponent implements OnInit {
 
@@ -37,7 +37,7 @@ export class CheckOutBookComponent implements OnInit {
 
     this.bookLoan.isbn  = this.isbn;
 
-    this.libraryService.addLoan(this.bookLoan).then(result => this.restResponse = result);
+    this.libraryService.addLoan(this.bookLoan).subscribe(result => this.restResponse = result);
 
   }
 

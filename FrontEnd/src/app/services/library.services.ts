@@ -1,133 +1,69 @@
-import {Injectable}     from '@angular/core';
-import {Http,Headers, RequestOptions} from '@angular/http';
-import 'rxjs/Rx';
+import {Injectable} from '@angular/core';
 import {Borrower} from '../model/Borrower';
-// Import RxJs required methods
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
 import {BookLoan} from "../model/BookLoan";
 import {CheckInBookModel} from "../model/CheckInBookModel";
+import {HttpClient} from "@angular/common/http";
+import {Observable} from "rxjs/Rx";
+
 
 @Injectable()
 export class LibraryService {
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
   }
 
   private apiURL = "http://localhost:8080/LibraryManagement/";
 
-  addBorrower(borrower: Borrower): Promise<any> {
-    let test_this = {
+  addBorrower(borrower: Borrower): Observable<any> {
+    let payload = {
       "name": borrower.name,
       "ssn": borrower.ssn,
       "address": borrower.address,
       "phone": borrower.phone
     };
 
-
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-    return this.http.post(this.apiURL + "addBorrower", JSON.stringify(test_this), options).toPromise()
-      .then(response => response.json())
-      .catch(this.handleError);
+    return this.http.post(this.apiURL + "addBorrower", JSON.stringify(payload));
   }
 
-  search(searchQuery: string): Promise<any> {
-
-    let data = {"query": searchQuery};
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.post(this.apiURL + "search", JSON.stringify(data), options).toPromise()
-      .then(response => response.json())
-      .catch(this.handleError);
-
+  search(searchQuery: string): Observable<any> {
+    return this.http.get(this.apiURL + "search?q=" + searchQuery);
   }
 
-  addLoan(bookLoan: BookLoan): Promise<any> {
-
+  addLoan(bookLoan: BookLoan): Observable<any> {
     let data = {"isbn": bookLoan.isbn, "borrowerId": bookLoan.borrowerId};
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.post(this.apiURL + "checkoutBook", JSON.stringify(data), options).toPromise()
-      .then(response => response.json())
-      .catch(this.handleError);
-
+    return this.http.post(this.apiURL + "checkoutBook", JSON.stringify(data));
   }
 
-  addOrUpdateFine():Promise<any>{
-
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.get(this.apiURL + "addOrUpdateFine", options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
-
+  addOrUpdateFine():Observable<any>{
+    return this.http.get(this.apiURL + "addOrUpdateFine");
   }
 
-  searchToCheckIn(checkIn:CheckInBookModel):Promise<any>{
+  searchToCheckIn(checkIn:CheckInBookModel):Observable<any>{
 
     let data = {"isbn":checkIn.isbn,"name":checkIn.name,"cardId":checkIn.cardId};
-
-
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.post(this.apiURL + "searchCheckedInBooks", JSON.stringify(data), options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
+    return this.http.post(this.apiURL + "searchCheckedInBooks", JSON.stringify(data));
 
   }
 
 
-  checkIn(isbn:string,cardId:string):Promise<any>{
-
+  checkIn(isbn:string,cardId:string):Observable<any>{
     let data = {"isbn":isbn,"cardId":cardId};
-
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.post(this.apiURL + "checkInBook", JSON.stringify(data), options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
-
+    return this.http.post(this.apiURL + "checkInBook", JSON.stringify(data));
   }
 
-  showFines():Promise<any>{
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.get(this.apiURL + "getAllFines", options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
+  showFines():Observable<any>{
+    return this.http.get(this.apiURL + "getAllFines");
   }
 
-  payFine(cardId:number):Promise<any>{
+  payFine(cardId:number):Observable<any>{
     let data = {"query":cardId};
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
+    return this.http.post(this.apiURL + "payFine", JSON.stringify(data));
 
-    return this.http.post(this.apiURL + "payFine", JSON.stringify(data), options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
   }
 
-  getFineForCardId(cardId:number, paid:string):Promise<any>{
+  getFineForCardId(cardId:number, paid:string):Observable<any>{
     let data = {"query":cardId,"paid":paid};
-    let headers = new Headers({'Content-Type': 'application/json'});
-    let options = new RequestOptions({headers: headers});
-
-    return this.http.post(this.apiURL + "getFineForCardId", JSON.stringify(data), options).toPromise()
-      .then(response =>response.json())
-      .catch(this.handleError);
+    return this.http.post(this.apiURL + "getFineForCardId", JSON.stringify(data))
   }
-
-  private handleError(error: any): Promise<any> {
-    console.error("error occurred", error);
-    return Promise.reject(error.message || error);
-  }
-
 
 }

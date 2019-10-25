@@ -1,25 +1,19 @@
-<button (click)="addOrUpdateFines()">Update Fines</button>
-<button (click)="showFines()" >Show Fines</button>
+<div class="p-2">
+  <button (click)="addOrUpdateFines()">Update Fines</button>
+  <button (click)="showFines()"  class="ml-2">Show Fines</button>
+</div>
 
 <div *ngIf="restResponse" class="form-group">
   <div [ngSwitch]=restResponse.success>
     <b *ngSwitchCase="true">{{restResponse.result}}</b>
     <b *ngSwitchDefault>{{restResponse.error}}</b>
   </div>
-  <!-- <div *ngIf={{restResponse.success}}>
-  Compilation Result : {{restResponse.result}}
-  <br/>
-  {{restResponse.error}} -->
 </div>
-<!--<div *ngIf="showForm" class="selectedtab">
- <select [(ngModel)]="selectedValue" (ngModelChange)="onChange($event)">
-   <option selected value="true" (click)="fines()" >Paid</option>
-   <option value="false" (click)="fines()">Not Paid</option>
- </select>-->
+<div *ngIf="isError">
+  {{error}}
+</div>
 
-
-<div *ngIf="fineResponse">
-  <!-- <div *ngFor="let f of fineResponse">-->
+<div *ngIf="fineResponse && !isError">
   <table border="0">
     <thead>
     <tr>
@@ -38,6 +32,5 @@
 
     </tbody>
   </table>
-  <!--</div>-->
 
 </div>

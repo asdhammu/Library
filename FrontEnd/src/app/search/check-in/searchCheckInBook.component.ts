@@ -9,8 +9,8 @@ import {Router} from "@angular/router";
 
 @Component({
 
-  templateUrl:'app/search/check-in/searchCheckInBook.component.html',
-  styleUrls: [ 'app/operation/borrower/borrower.component.css' ],
+  templateUrl:'./searchCheckInBook.component.html',
+  styleUrls: [ './searchCheckInBook.component.css' ],
   providers:[LibraryService]
 })
 
@@ -25,7 +25,7 @@ export class SearchCheckInBookComponent{
   searchResult: SearchResult[];
 
   searchToCheckIn():void{
-    this.libraryService.searchToCheckIn(this.checkInBook).then(result=> this.searchResult = result);
+    this.libraryService.searchToCheckIn(this.checkInBook).subscribe(result=> this.searchResult = result);
   }
 
   onSubmit(isbn:string,cardId:string):void{

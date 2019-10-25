@@ -1,11 +1,12 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component} from '@angular/core';
 import {SearchResult} from "../model/SearchResult";
 import {LibraryService} from "../services/library.services";
 import {Router} from "@angular/router";
+
 @Component({
 	selector: '<search-component>',
   templateUrl : './search.component.html',
-	styleUrls: [ 'app/operation/borrower/borrower.component.css' ],
+	styleUrls: [ './search.component.css' ],
   providers:[LibraryService]
 })
 
@@ -20,7 +21,7 @@ export class SearchComponent{
 	  private libraryService:LibraryService){}
 
   search(): void{
-    this.libraryService.search(this.query).then(result=>this.searchResult = result);
+    this.libraryService.search(this.query).subscribe(result=>this.searchResult = result);
 	}
 
 
