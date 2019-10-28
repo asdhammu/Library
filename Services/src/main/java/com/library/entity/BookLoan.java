@@ -28,9 +28,6 @@ public class BookLoan {
     @JoinColumn(name = "card_id")
     private Borrower borrower;
 
-/*@Embedded
-    private BookBorrowerPrimaryKey bookBorrowerPrimaryKey;*/
-
     @Column(name = "date_out")
     private LocalDateTime dateOut;
 
@@ -43,14 +40,6 @@ public class BookLoan {
     @OneToOne(mappedBy = "bookLoan")
     private Fine fine;
 
-    public Long getBookLoanId() {
-        return bookLoanId;
-    }
-
-    public void setBookLoanId(Long bookLoanId) {
-        this.bookLoanId = bookLoanId;
-    }
-
     public BookLoan() {
         // TODO Auto-generated constructor stub
     }
@@ -58,6 +47,14 @@ public class BookLoan {
     public BookLoan(Borrower borrower, Book book) {
         this.borrower = borrower;
         this.book = book;
+    }
+
+    public Long getBookLoanId() {
+        return bookLoanId;
+    }
+
+    public void setBookLoanId(Long bookLoanId) {
+        this.bookLoanId = bookLoanId;
     }
 
     public Book getBook() {
@@ -75,17 +72,6 @@ public class BookLoan {
     public void setBorrower(Borrower borrower) {
         this.borrower = borrower;
     }
-    /*public BookLoan(BookBorrowerPrimaryKey bookBorrowerPrimaryKey){
-        this.bookBorrowerPrimaryKey = bookBorrowerPrimaryKey;
-    }
-
-    public BookBorrowerPrimaryKey getBookBorrowerPrimaryKey() {
-        return bookBorrowerPrimaryKey;
-    }
-
-    public void setBookBorrowerPrimaryKey(BookBorrowerPrimaryKey bookBorrowerPrimaryKey) {
-        this.bookBorrowerPrimaryKey = bookBorrowerPrimaryKey;
-    }*/
 
     public LocalDateTime getDateOut() {
         return dateOut;

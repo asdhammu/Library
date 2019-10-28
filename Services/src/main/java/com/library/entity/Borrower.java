@@ -11,85 +11,78 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="borrower")
+@Table(name = "borrower")
 public class Borrower {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name="card_id")
-	private int cardId;
-	
-	@Column(name="ssn")
-	private String ssn;
-	
-	@Column(name="bname")
-	private String bName;
-	
-	@Column(name="address")
-	private String address;
-	
-	@Column(name="phone")
-	private String phone;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "card_id")
+    private int cardId;
 
-	/*@LazyCollection(LazyCollectionOption.FALSE)
-	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-	@JoinTable(name = "borrower_book", joinColumns = {@JoinColumn(name = "card_id")}, inverseJoinColumns = {@JoinColumn(name = "isbn")})
-	private List<Book> books = new ArrayList<>();*/
+    @Column(name = "ssn")
+    private String ssn;
 
-	@OneToMany()
-	private List<BookLoan> bookLoans = new ArrayList<>();
+    @Column(name = "bname")
+    private String bName;
 
-	public Borrower() {
-		
-	}
+    @Column(name = "address")
+    private String address;
 
+    @Column(name = "phone")
+    private String phone;
 
-	public List<BookLoan> getBookLoans() {
-		return bookLoans;
-	}
+    @OneToMany()
+    private List<BookLoan> bookLoans = new ArrayList<>();
 
-	public void setBookLoans(List<BookLoan> bookLoans) {
-		this.bookLoans = bookLoans;
-	}
+    public Borrower() {
+    }
 
-	public int getCardId() {
-		return cardId;
-	}
+    public List<BookLoan> getBookLoans() {
+        return bookLoans;
+    }
 
-	public void setCardId(int cardId) {
-		this.cardId = cardId;
-	}
+    public void setBookLoans(List<BookLoan> bookLoans) {
+        this.bookLoans = bookLoans;
+    }
 
-	public String getSsn() {
-		return ssn;
-	}
+    public int getCardId() {
+        return cardId;
+    }
 
-	public void setSsn(String ssn) {
-		this.ssn = ssn;
-	}
+    public void setCardId(int cardId) {
+        this.cardId = cardId;
+    }
 
-	public String getbName() {
-		return bName;
-	}
+    public String getSsn() {
+        return ssn;
+    }
 
-	public void setbName(String bName) {
-		this.bName = bName;
-	}
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getbName() {
+        return bName;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setbName(String bName) {
+        this.bName = bName;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
 }

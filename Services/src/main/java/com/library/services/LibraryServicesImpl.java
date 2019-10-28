@@ -190,9 +190,6 @@ public class LibraryServicesImpl implements LibraryServices {
         RestResponse response = new RestResponse();
 
         try {
-            /*BookBorrowerPrimaryKey bookBorrowerPrimaryKey = new BookBorrowerPrimaryKey();
-            bookBorrowerPrimaryKey.setIsbn(book.getIsbn());
-            bookBorrowerPrimaryKey.setCardId(book.getCardId());*/
             bookRepository.findByIsbn(book.getIsbn()).get();
             BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
                     bookRepository.findByIsbn(book.getIsbn()).get()).get(0);

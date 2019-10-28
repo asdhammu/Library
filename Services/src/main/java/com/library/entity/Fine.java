@@ -44,14 +44,6 @@ public class Fine {
         this.fineId = fineId;
     }
 
-    /*public BookLoan getBookLoan() {
-        return bookLoan;
-    }
-
-    public void setBookLoan(BookLoan bookLoan) {
-        this.bookLoan = bookLoan;
-    }*/
-
     public String getFineAmount() {
         return fineAmount;
     }
