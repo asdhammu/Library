@@ -1,11 +1,11 @@
 package com.library.entity;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -15,13 +15,21 @@ import java.time.LocalDateTime;
 @Table(name = "book_loan")
 public class BookLoan {
 
-    @EmbeddedId
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumns({
-            @JoinColumn(name = "cardId", insertable = false, updatable = false),
-            @JoinColumn(name = "isbn", insertable = false, updatable = false)
-    })
-    private BookBorrowerPrimaryKey bookBorrowerPrimaryKey;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "book_loan_id")
+    private Long bookLoanId;
+
+    @ManyToOne
+    @JoinColumn(name = "isbn")
+    private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "card_id")
+    private Borrower borrower;
+
+/*@Embedded
+    private BookBorrowerPrimaryKey bookBorrowerPrimaryKey;*/
 
     @Column(name = "date_out")
     private LocalDateTime dateOut;
@@ -32,14 +40,42 @@ public class BookLoan {
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
-    @OneToOne(mappedBy="bookLoan")
+    @OneToOne(mappedBy = "bookLoan")
     private Fine fine;
+
+    public Long getBookLoanId() {
+        return bookLoanId;
+    }
+
+    public void setBookLoanId(Long bookLoanId) {
+        this.bookLoanId = bookLoanId;
+    }
 
     public BookLoan() {
         // TODO Auto-generated constructor stub
     }
 
-    public BookLoan(BookBorrowerPrimaryKey bookBorrowerPrimaryKey){
+    public BookLoan(Borrower borrower, Book book) {
+        this.borrower = borrower;
+        this.book = book;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public Borrower getBorrower() {
+        return borrower;
+    }
+
+    public void setBorrower(Borrower borrower) {
+        this.borrower = borrower;
+    }
+    /*public BookLoan(BookBorrowerPrimaryKey bookBorrowerPrimaryKey){
         this.bookBorrowerPrimaryKey = bookBorrowerPrimaryKey;
     }
 
@@ -49,7 +85,7 @@ public class BookLoan {
 
     public void setBookBorrowerPrimaryKey(BookBorrowerPrimaryKey bookBorrowerPrimaryKey) {
         this.bookBorrowerPrimaryKey = bookBorrowerPrimaryKey;
-    }
+    }*/
 
     public LocalDateTime getDateOut() {
         return dateOut;

@@ -2,7 +2,6 @@ package com.library.services;
 
 import com.library.entity.Author;
 import com.library.entity.Book;
-import com.library.entity.BookBorrowerPrimaryKey;
 import com.library.entity.BookLoan;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
@@ -191,12 +190,14 @@ public class LibraryServicesImpl implements LibraryServices {
         RestResponse response = new RestResponse();
 
         try {
-            BookBorrowerPrimaryKey bookBorrowerPrimaryKey = new BookBorrowerPrimaryKey();
+            /*BookBorrowerPrimaryKey bookBorrowerPrimaryKey = new BookBorrowerPrimaryKey();
             bookBorrowerPrimaryKey.setIsbn(book.getIsbn());
-            bookBorrowerPrimaryKey.setCardId(book.getCardId());
-            BookLoan bookLoan = bookLoanRepository.findByBookBorrowerPrimaryKey(bookBorrowerPrimaryKey).get();
+            bookBorrowerPrimaryKey.setCardId(book.getCardId());*/
+            bookRepository.findByIsbn(book.getIsbn()).get();
+            BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
+                    bookRepository.findByIsbn(book.getIsbn()).get()).get(0);
             bookLoan.setDateIn(LocalDateTime.now());
-            Book book1 = bookRepository.findByISBN(book.getIsbn()).get();
+            Book book1 = bookRepository.findByIsbn(book.getIsbn()).get();
             book1.setAvailable(true);
             bookRepository.save(book1);
             bookLoanRepository.save(bookLoan);
@@ -255,10 +256,10 @@ public class LibraryServicesImpl implements LibraryServices {
             for (BookLoan bookLoan : bookLoans) {
                 SearchResult result = new SearchResult();
                 if (bookLoan.getDateIn() == null) {
-                    Book book1 = bookRepository.findByISBN(bookLoan.getBookBorrowerPrimaryKey().getIsbn()).get();
+                    Book book1 = bookRepository.findByIsbn(bookLoan.getBook().getIsbn()).get();
 
                     result.setCover(book1.getCover());
-                    result.setISBN(book1.getISBN());
+                    result.setISBN(book1.getIsbn());
                     result.setTitle(book1.getTitle());
                     result.setBorrower(borrower2);
                     list.add(result);
@@ -284,7 +285,8 @@ public class LibraryServicesImpl implements LibraryServices {
             response.setSuccess(false);
             return response;
         }
-        List<BookLoan> bookLoans = bookLoanRepository.findByBookBorrowerPrimaryKey_CardId(borrowerId).stream().filter(x -> x.getDateIn() == null)
+
+        List<BookLoan> bookLoans = bookLoanRepository.findByBorrower(borrowerRepository.findByCardId(borrowerId).get()).stream().filter(x -> x.getDateIn() == null)
                 .collect(Collectors.toList());
         if (bookLoans.size() > 2) {
             response.setError("3 Book have been issued to the borrower");
@@ -292,17 +294,16 @@ public class LibraryServicesImpl implements LibraryServices {
             return response;
         }
 
-        Book book = bookRepository.findByISBN(isbn).get();
+        Book book = bookRepository.findByIsbn(isbn).get();
         if (book == null || !book.isAvailable()) {
             response.setSuccess(false);
             response.setError("Book is not available. It's checked out");
             return response;
         }
 
-        BookBorrowerPrimaryKey bookBorrowerPrimaryKey = new BookBorrowerPrimaryKey();
-        bookBorrowerPrimaryKey.setCardId(borrowerId);
-        bookBorrowerPrimaryKey.setIsbn(isbn);
-        BookLoan bookLoan = new BookLoan(bookBorrowerPrimaryKey);
+        Borrower borrower = borrowerRepository.findByCardId(borrowerId).get();
+        Book  book1 = bookRepository.findByIsbn(isbn).get();
+        BookLoan bookLoan = new BookLoan(borrower, book1);
         bookLoan.setDateOut(LocalDateTime.now());
         bookLoan.setDueDate(LocalDateTime.now().minusDays(-14));
         book.setAvailable(false);
@@ -324,7 +325,7 @@ public class LibraryServicesImpl implements LibraryServices {
         // regex for 13 digits i.e. ISBN number with 13 digits
         if (searchQuery.getQuery().matches("^(\\d{13})?$")) {
 
-            Book book = bookRepository.findByISBN(searchQuery.getQuery()).get();
+            Book book = bookRepository.findByIsbn(searchQuery.getQuery()).get();
             List<Book> books = new ArrayList<>();
             books.add(book);
             prepareSearchResult(result, books);
@@ -376,25 +377,25 @@ public class LibraryServicesImpl implements LibraryServices {
             book = (Book) arr[0];
             author = (Author) arr[1];
 
-            if (isbn.containsKey(book.getISBN())) {
-                authorList = isbn.get(book.getISBN()).getAuthor();
+            if (isbn.containsKey(book.getIsbn())) {
+                authorList = isbn.get(book.getIsbn()).getAuthor();
                 authorList.add(author);
-                SearchResult searchResult = isbn.get(book.getISBN());
+                SearchResult searchResult = isbn.get(book.getIsbn());
                 searchResult.setAuthor(authorList);
-                isbn.put(book.getISBN(), searchResult);
+                isbn.put(book.getIsbn(), searchResult);
 
             } else {
                 SearchResult result2 = new SearchResult();
                 result2.setCover(book.getCover());
                 result2.setAvailable(book.isAvailable());
-                result2.setISBN(book.getISBN());
+                result2.setISBN(book.getIsbn());
                 result2.setTitle(book.getTitle());
                 result2.setPublisher(book.getPublisher());
                 result2.setPages(book.getPages());
                 List<Author> authors = new ArrayList<Author>();
                 authors.add(author);
                 result2.setAuthor(authors);
-                isbn.put(book.getISBN(), result2);
+                isbn.put(book.getIsbn(), result2);
             }
         }
 
@@ -509,7 +510,9 @@ public class LibraryServicesImpl implements LibraryServices {
     public void loadClassifier(){
         try {
             LOGGER.debug("Classifier loading started");
-            this.classifier = CRFClassifier.getClassifier(new File("english.all.3class.distsim.crf.ser.gz"));
+            ClassLoader classLoader = LibraryServicesImpl.class.getClassLoader();
+            File file = new File(classLoader.getResource("nlp/english.all.3class.distsim.crf.ser.gz").getFile());
+            this.classifier = CRFClassifier.getClassifier(file);
             LOGGER.debug("Classifier loaded successfully");
         } catch (Exception e){
             LOGGER.error("Error while loading classifier", e);

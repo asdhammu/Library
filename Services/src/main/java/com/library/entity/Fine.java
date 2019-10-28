@@ -2,8 +2,8 @@ package com.library.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -15,12 +15,12 @@ import javax.persistence.Table;
 public class Fine {
 
     @Id
-    @GeneratedValue
-    @Column(name="fine_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "fine_id")
     private int fineId;
 
     @OneToOne
-    @JoinColumn(name="loan_id")
+    @JoinColumn(name = "loan_id")
     private BookLoan bookLoan;
 
     @Column(name = "fine_amt")
@@ -32,17 +32,25 @@ public class Fine {
     public Fine() {
     }
 
-    public Fine(BookLoan bookLoan){
+    public Fine(BookLoan bookLoan) {
         this.bookLoan = bookLoan;
     }
 
-    public BookLoan getBookLoan() {
+    public int getFineId() {
+        return fineId;
+    }
+
+    public void setFineId(int fineId) {
+        this.fineId = fineId;
+    }
+
+    /*public BookLoan getBookLoan() {
         return bookLoan;
     }
 
     public void setBookLoan(BookLoan bookLoan) {
         this.bookLoan = bookLoan;
-    }
+    }*/
 
     public String getFineAmount() {
         return fineAmount;

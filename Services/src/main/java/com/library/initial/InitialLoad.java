@@ -37,7 +37,8 @@ public class InitialLoad {
         BufferedReader bufferedReader;
         String line;
         try {
-        	bufferedReader = new BufferedReader(new FileReader("books.csv"));
+        	ClassLoader classLoader = InitialLoad.class.getClassLoader();
+        	bufferedReader = new BufferedReader(new FileReader(classLoader.getResource("books.csv").getFile()));
         	while((line = bufferedReader.readLine())!=null){
         		String[] s = line.split("\\t");
         		if(s[0].equalsIgnoreCase("isbn10")) continue;
@@ -54,7 +55,7 @@ public class InitialLoad {
 	private void addBook(String[] bookData) {
 		
         Book book = new Book();
-        book.setISBN(bookData[1]);
+        book.setIsbn(bookData[1]);
         book.setTitle(bookData[2]);
         book.setCover(bookData[4]);
         book.setPublisher(bookData[5]);

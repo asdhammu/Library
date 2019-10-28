@@ -4,8 +4,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +18,9 @@ import java.util.List;
 public class Book {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "isbn")
-    private String ISBN;
+    private String isbn;
 
     @Column(name = "title")
     private String title;
@@ -36,8 +40,19 @@ public class Book {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "books")
     List<Author> authors = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "borrowers")
-    List<Borrower> borrowers = new ArrayList<>();
+    /*@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "borrowers")
+    List<Borrower> borrowers = new ArrayList<>();*/
+
+    @OneToMany(mappedBy="book", cascade = CascadeType.ALL)
+    private List<BookLoan> bookLoan = new ArrayList<>();
+
+    public List<BookLoan> getBookLoan() {
+        return bookLoan;
+    }
+
+    public void setBookLoan(List<BookLoan> bookLoan) {
+        this.bookLoan = bookLoan;
+    }
 
     public List<Author> getAuthors() {
         return authors;
@@ -47,20 +62,20 @@ public class Book {
         this.authors = authors;
     }
 
-    public List<Borrower> getBorrowers() {
+    /*public List<Borrower> getBorrowers() {
         return borrowers;
     }
 
     public void setBorrowers(List<Borrower> borrowers) {
         this.borrowers = borrowers;
+    }*/
+
+    public String getIsbn() {
+        return isbn;
     }
 
-    public String getISBN() {
-        return ISBN;
-    }
-
-    public void setISBN(String iSBN) {
-        ISBN = iSBN;
+    public void setIsbn(String iSBN) {
+        isbn = iSBN;
     }
 
     public String getTitle() {
