@@ -29,7 +29,6 @@ public class InitialLoad {
     @Autowired
     AuthorRepository authorRepository;
 
-    @PostConstruct
     public void load() {
 
         LOGGER.info("Initial Load started");
