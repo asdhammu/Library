@@ -190,11 +190,11 @@ public class LibraryServicesImpl implements LibraryServices {
         RestResponse response = new RestResponse();
 
         try {
-            bookRepository.findByIsbn(book.getIsbn()).get();
+            bookRepository.findById(book.getIsbn()).get();
             BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
-                    bookRepository.findByIsbn(book.getIsbn()).get()).get(0);
+                    bookRepository.findById(book.getIsbn()).get()).get(0);
             bookLoan.setDateIn(LocalDateTime.now());
-            Book book1 = bookRepository.findByIsbn(book.getIsbn()).get();
+            Book book1 = bookRepository.findById(book.getIsbn()).get();
             book1.setAvailable(true);
             bookRepository.save(book1);
             bookLoanRepository.save(bookLoan);
@@ -253,7 +253,7 @@ public class LibraryServicesImpl implements LibraryServices {
             for (BookLoan bookLoan : bookLoans) {
                 SearchResult result = new SearchResult();
                 if (bookLoan.getDateIn() == null) {
-                    Book book1 = bookRepository.findByIsbn(bookLoan.getBook().getIsbn()).get();
+                    Book book1 = bookRepository.findById(bookLoan.getBook().getIsbn()).get();
 
                     result.setCover(book1.getCover());
                     result.setISBN(book1.getIsbn());
@@ -291,7 +291,7 @@ public class LibraryServicesImpl implements LibraryServices {
             return response;
         }
 
-        Book book = bookRepository.findByIsbn(isbn).get();
+        Book book = bookRepository.findById(isbn).get();
         if (book == null || !book.isAvailable()) {
             response.setSuccess(false);
             response.setError("Book is not available. It's checked out");
@@ -299,7 +299,7 @@ public class LibraryServicesImpl implements LibraryServices {
         }
 
         Borrower borrower = borrowerRepository.findByCardId(borrowerId).get();
-        Book  book1 = bookRepository.findByIsbn(isbn).get();
+        Book  book1 = bookRepository.findById(isbn).get();
         BookLoan bookLoan = new BookLoan(borrower, book1);
         bookLoan.setDateOut(LocalDateTime.now());
         bookLoan.setDueDate(LocalDateTime.now().minusDays(-14));
@@ -322,7 +322,7 @@ public class LibraryServicesImpl implements LibraryServices {
         // regex for 13 digits i.e. ISBN number with 13 digits
         if (searchQuery.getQuery().matches("^(\\d{13})?$")) {
 
-            Book book = bookRepository.findByIsbn(searchQuery.getQuery()).get();
+            Book book = bookRepository.findById(searchQuery.getQuery()).get();
             List<Book> books = new ArrayList<>();
             books.add(book);
             prepareSearchResult(result, books);

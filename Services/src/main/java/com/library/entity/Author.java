@@ -12,24 +12,35 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Entity(name = "author")
-public class Author {
+
+@Entity
+@Table(name = "author")
+public class Author implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "authorId")
-    private int authorId;
+    private Long authorId;
 
+    @NotNull
     @Column(name = "name")
     private String name;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany
     @JoinTable(name = "author_book", joinColumns = {@JoinColumn(name = "authorId")}, inverseJoinColumns = {@JoinColumn(name = "isbn")})
     List<Book> books = new ArrayList<>();
+
+    public Author(){
+
+    }
 
     public List<Book> getBooks() {
         return books;
@@ -39,11 +50,11 @@ public class Author {
         this.books = books;
     }
 
-    public int getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(int authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 
@@ -55,4 +66,31 @@ public class Author {
         this.name = name;
     }
 
+    public void addBook(Book book) {
+        this.books.add(book);
+        book.getAuthors().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                ", name='" + name + '\'' +
+                ", books=" + books +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Author author = (Author) o;
+        return Objects.equals(authorId, author.authorId) &&
+                Objects.equals(name, author.name) &&
+                Objects.equals(books, author.books);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(authorId, name, books);
+    }
 }

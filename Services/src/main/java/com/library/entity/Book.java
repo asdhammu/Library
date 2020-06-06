@@ -10,41 +10,50 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "book")
-public class Book {
+public class Book implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "isbn")
     private String isbn;
 
+    @NotNull
     @Column(name = "title")
     private String title;
 
+    @NotNull
     @Column(name = "cover")
     private String cover;
 
     @Column(name = "publisher")
     private String publisher;
 
+    @NotNull
     @Column(name = "pages")
     private String pages;
 
     @Column(name = "available")
     private boolean available;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "books")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "books")
     List<Author> authors = new ArrayList<>();
 
     /*@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "borrowers")
     List<Borrower> borrowers = new ArrayList<>();*/
 
-    @OneToMany(mappedBy="book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoan> bookLoan = new ArrayList<>();
+
+    public Book(){
+
+    }
 
     public List<BookLoan> getBookLoan() {
         return bookLoan;
@@ -116,5 +125,33 @@ public class Book {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                ", isbn='" + isbn + '\'' +
+                ", title='" + title + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return available == book.available &&
+                Objects.equals(isbn, book.isbn) &&
+                Objects.equals(title, book.title) &&
+                Objects.equals(cover, book.cover) &&
+                Objects.equals(publisher, book.publisher) &&
+                Objects.equals(pages, book.pages) &&
+                Objects.equals(authors, book.authors) &&
+                Objects.equals(bookLoan, book.bookLoan);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn, title, cover, publisher, pages, available, authors, bookLoan);
     }
 }

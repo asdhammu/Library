@@ -3,7 +3,9 @@ package com.library.repository;
 import com.library.entity.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AuthorRepository extends JpaRepository<Author, Integer> {
+import java.util.List;
 
-    Author findByName(String name);
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+
+    List<Author> findByName(String name);
 }

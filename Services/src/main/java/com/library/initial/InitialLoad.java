@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -53,15 +56,18 @@ public class InitialLoad {
 
     private void addBook(String[] bookData) {
 
+        if (bookRepository.findById(bookData[1]).isPresent()) {
+            return;
+        }
+
+
         Book book = new Book();
         book.setIsbn(bookData[1]);
         book.setTitle(bookData[2]);
         book.setCover(bookData[4]);
         book.setPublisher(bookData[5]);
         book.setPages(bookData[6]);
-
-        bookRepository.save(book);
-
+        book = bookRepository.saveAndFlush(book);
         String[] names = bookData[3].split(",");
 
         Set<String> set = new HashSet<>();
@@ -70,11 +76,43 @@ public class InitialLoad {
             set.add(s);
         }
 
-        for (String name : set) {
-            Author author = authorRepository.findByName(name);
-            author.getBooks().add(book);
-            authorRepository.save(author);
+        try {
+
+            List<Author> authorList = new ArrayList<>();
+            for (String name : set) {
+                List<Author> authors = authorRepository.findByName(name);
+                Author author;
+                if (authors.isEmpty()) {
+                    author = new Author();
+                    author.setName(name);
+                } else {
+                    author = authors.get(0);
+                }
+                author.addBook(book);
+                authorList.add(author);
+            }
+            authorRepository.saveAll(authorList);
+        } catch (Exception e) {
+            System.out.println("Book name" + book.getIsbn() + " - " + book.getTitle());
+            System.out.println(book.getAuthors());
+            throw e;
         }
+
+        // book = bookRepository.saveAndFlush(book);
+//        for(String name: set){
+//            Author author = authorRepository.findByName(name);
+//            if(author == null){
+//                author = new Author();
+//                author.setName(name);
+//            }
+//            author.getBooks().add(book);
+//            book.getAuthors().add(author);
+//
+//            authorRepository.save(author);
+//        }
+
+
+        // bookRepository.saveAndFlush(book);
     }
 
 }
