@@ -2,6 +2,7 @@ package com.library.services;
 
 import java.util.List;
 
+import com.library.dto.Book;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
 import com.library.modal.BookLoanRequest;
@@ -13,21 +14,25 @@ import com.library.modal.SearchResult;
 
 public interface LibraryServices {
 
-	public RestResponse addBorrower(Borrower borrower);
+	com.library.dto.Borrower addBorrower(Borrower borrower);
 
-	public RestResponse addFine();
+	RestResponse addFine();
 
-	public RestResponse payFine(int cardId);
+	RestResponse payFine(int cardId);
 
-	public RestResponse addBookLoan(BookLoanRequest bookLoanRequest);
+	RestResponse addBookLoan(BookLoanRequest bookLoanRequest);
 
-	public List<SearchResult> search(SearchQuery query);
+// 	List<SearchResult> search(SearchQuery query);
 
-	public List<SearchResult> searchCheckedInBooks(CheckInBook book);
+	List<SearchResult> searchCheckedInBooks(CheckInBook book);
 	
-	public RestResponse checkInBook(CheckInBook book);
+	RestResponse checkInBook(CheckInBook book);
 
-	public List<FineResponse> getAllFines();
+	List<FineResponse> getAllFines();
 	
-	public List<Fine> getFineForCardId(SearchQuery query);
+	List<Fine> getFineForCardId(SearchQuery query);
+
+	List<Book> searchBooks(String query, int page, int size);
+
+
 }

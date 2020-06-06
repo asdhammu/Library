@@ -1,41 +1,23 @@
 package com.library.services;
 
-import com.library.entity.Author;
+import com.library.dto.Author;
 import com.library.entity.Book;
 import com.library.entity.BookLoan;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
-import com.library.modal.BookLoanRequest;
-import com.library.modal.CheckInBook;
-import com.library.modal.FineResponse;
-import com.library.modal.RestResponse;
-import com.library.modal.SearchQuery;
-import com.library.modal.SearchResult;
-import com.library.repository.BookLoanRepository;
-import com.library.repository.BookRepository;
-import com.library.repository.BorrowerRepository;
-import com.library.repository.FineRepository;
-import edu.stanford.nlp.ie.AbstractSequenceClassifier;
-import edu.stanford.nlp.ie.crf.CRFClassifier;
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.util.Triple;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.TokenNameFinderModel;
-import opennlp.tools.util.Span;
+import com.library.error.BorrowerExistsException;
+import com.library.modal.*;
+import com.library.nlp.*;
+import com.library.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,8 +43,15 @@ public class LibraryServicesImpl implements LibraryServices {
     @Autowired
     BookRepository bookRepository;
 
+    @Autowired
+    AuthorRepository authorRepository;
 
-    AbstractSequenceClassifier<CoreLabel> classifier;
+    NLPQuery nlpQuery;
+
+    public LibraryServicesImpl() {
+
+        nlpQuery = NLPFactory.getSource(NLPResource.STANFORD);
+    }
 
 
     private SessionFactory sessionFactory;
@@ -80,21 +69,19 @@ public class LibraryServicesImpl implements LibraryServices {
     /**
      * Add Borrower
      */
-    public RestResponse addBorrower(Borrower borrower) {
-
-        RestResponse response = new RestResponse();
+    public com.library.dto.Borrower addBorrower(Borrower borrower) {
 
         if (borrowerRepository.findBySsn(borrower.getSsn()).isPresent()) {
-            response.setError("Account already exists");
-            response.setSuccess(false);
-            return response;
+            throw new BorrowerExistsException("Borrower exist with ssn number " + borrower.getSsn());
         }
 
         Borrower borrower1 = borrowerRepository.save(borrower);
-        response.setSuccess(true);
-        response.setResult(String.valueOf(borrower1.getCardId()));
-        return response;
 
+        com.library.dto.Borrower borrowerDto = new com.library.dto.Borrower();
+        borrowerDto.setName(borrower1.getbName());
+        borrowerDto.setCardId(borrower1.getCardId());
+        borrowerDto.setAddress(borrower1.getAddress());
+        return borrowerDto;
     }
 
     public List<FineResponse> getAllFines() {
@@ -218,11 +205,11 @@ public class LibraryServicesImpl implements LibraryServices {
             query.setQuery(book.getIsbn());
             List<SearchResult> result = new ArrayList<>();
 
-            for (SearchResult result2 : this.search(query)) {
-                if (!result2.isAvailable()) {
-                    result.add(result2);
-                }
-            }
+//            for (SearchResult result2 : this.search(query)) {
+//                if (!result2.isAvailable()) {
+//                    result.add(result2);
+//                }
+//            }
             return result;
         }
 
@@ -299,7 +286,7 @@ public class LibraryServicesImpl implements LibraryServices {
         }
 
         Borrower borrower = borrowerRepository.findByCardId(borrowerId).get();
-        Book  book1 = bookRepository.findById(isbn).get();
+        Book book1 = bookRepository.findById(isbn).get();
         BookLoan bookLoan = new BookLoan(borrower, book1);
         bookLoan.setDateOut(LocalDateTime.now());
         bookLoan.setDueDate(LocalDateTime.now().minusDays(-14));
@@ -314,7 +301,7 @@ public class LibraryServicesImpl implements LibraryServices {
     /**
      * Searches book catalog and returns result with author details and
      * availability
-     */
+     *//*
     public List<SearchResult> search(SearchQuery searchQuery) {
 
         List<SearchResult> result = new ArrayList<>();
@@ -340,20 +327,20 @@ public class LibraryServicesImpl implements LibraryServices {
         capitalizeString.deleteCharAt(capitalizeString.length() - 1);
         searchQuery.setQuery(capitalizeString.toString());
 
-        extractNameUsingStanfordNLP(searchQuery, bookNameQuery, authorQuery);
+        extractNameUsingStanfordNLP(searchQuery.getQuery(), bookNameQuery, authorQuery);
 
-/*
+*//*
         hqlQuery = "from Book b, author a, BookAuthor ba where a.author_id= ba.author.author_id and b.ISBN = ba.book.ISBN and b.title like '%"
                 + bookNameQuery + "%' and a.name like '%" + authorQuery + "%'";
-*/
+*//*
 
-        List<Book> books = bookRepository.findByTitleIgnoreCaseContaining(bookNameQuery.toString());
+        // List<Book> books = bookRepository.findByTitleIgnoreCaseContaining(bookNameQuery.toString());
 
-        prepareSearchResult(result, books);
+        prepareSearchResult(result, new ArrayList<>());
 
         return result;
     }
-
+*/
     /**
      * Prepares the result
      *
@@ -361,38 +348,26 @@ public class LibraryServicesImpl implements LibraryServices {
      * @param list
      */
     private void prepareSearchResult(List<SearchResult> result, List<Book> list) {
-        Book book;
-        Author author;
-        List<Author> authorList;
 
         Map<String, SearchResult> isbn = new HashMap<>();
+        for (Book b : list) {
 
-        for (Object b : list) {
+            if (isbn.containsKey(b.getIsbn())) {
 
-            Object[] arr = (Object[]) b;
-
-            book = (Book) arr[0];
-            author = (Author) arr[1];
-
-            if (isbn.containsKey(book.getIsbn())) {
-                authorList = isbn.get(book.getIsbn()).getAuthor();
-                authorList.add(author);
-                SearchResult searchResult = isbn.get(book.getIsbn());
-                searchResult.setAuthor(authorList);
-                isbn.put(book.getIsbn(), searchResult);
+                SearchResult searchResult = isbn.get(b.getIsbn());
+                searchResult.setAuthor(b.getAuthors());
+                isbn.put(b.getIsbn(), searchResult);
 
             } else {
                 SearchResult result2 = new SearchResult();
-                result2.setCover(book.getCover());
-                result2.setAvailable(book.isAvailable());
-                result2.setISBN(book.getIsbn());
-                result2.setTitle(book.getTitle());
-                result2.setPublisher(book.getPublisher());
-                result2.setPages(book.getPages());
-                List<Author> authors = new ArrayList<Author>();
-                authors.add(author);
-                result2.setAuthor(authors);
-                isbn.put(book.getIsbn(), result2);
+                result2.setCover(b.getCover());
+                result2.setAvailable(b.isAvailable());
+                result2.setISBN(b.getIsbn());
+                result2.setTitle(b.getTitle());
+                result2.setPublisher(b.getPublisher());
+                result2.setPages(b.getPages());
+                result2.setAuthor(b.getAuthors());
+                isbn.put(b.getIsbn(), result2);
             }
         }
 
@@ -401,85 +376,6 @@ public class LibraryServicesImpl implements LibraryServices {
         }
     }
 
-    /**
-     * Using Natural Language processing for extracting name entities
-     *
-     * @param searchQuery
-     * @param bookNameQuery
-     * @param authorQuery
-     */
-    private void extractNameUsingStanfordNLP(SearchQuery searchQuery, StringBuffer bookNameQuery,
-                                             StringBuffer authorQuery) {
-        try {
-
-            int startIndex = 0, endIndex = 0;
-            List<Triple<String, Integer, Integer>> triples = classifier
-                    .classifyToCharacterOffsets(searchQuery.getQuery());
-            for (Triple<String, Integer, Integer> trip : triples) {
-                startIndex = trip.second();
-                endIndex = trip.third();
-
-            }
-
-            authorQuery.append(searchQuery.getQuery(), startIndex, endIndex);
-            bookNameQuery.append(searchQuery.getQuery(), 0, startIndex);
-            bookNameQuery.append(searchQuery.getQuery().substring(endIndex));
-
-            LOGGER.debug("Author Query " + authorQuery + " :: Book query ::  " + bookNameQuery);
-
-        } catch (Exception e) {
-            LOGGER.error("Exception while extracting features ", e);
-        }
-
-    }
-
-    @SuppressWarnings("unused")
-    private void extractNameUsingApacheNLP(SearchQuery searchQuery, StringBuffer bookNameQuery,
-                                           StringBuffer authorQuery) {
-        InputStream modelFile = null;
-
-        String fileName = "en-ner-person.bin";
-
-        try {
-            modelFile = new FileInputStream(new File(fileName));
-            TokenNameFinderModel finderModel = new TokenNameFinderModel(modelFile);
-            NameFinderME finderME = new NameFinderME(finderModel);
-            String[] sQuery = searchQuery.getQuery().split(" ");
-            Span nameSpan[] = finderME.find(sQuery);
-            int start = 0, end = 0, diff = 0;
-            for (Span s : nameSpan) {
-
-                System.out.println(s.toString());
-                start = s.getStart();
-                end = s.getEnd();
-                diff = s.getEnd() - s.getStart();
-                for (int i = 0; i < diff; i++) {
-                    authorQuery.append(sQuery[s.getStart() + i]);
-                    if (i == diff - 1) {
-                        continue;
-                    }
-                    authorQuery.append(" ");
-                }
-            }
-
-            for (int i = 0; i < sQuery.length; i++) {
-
-                if (i < start || i >= end) {
-                    bookNameQuery.append(sQuery[i]);
-                    if (i == sQuery.length - 1) {
-                        continue;
-                    }
-                    bookNameQuery.append(" ");
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            LOGGER.error("File not found", e);
-        } catch (IOException e) {
-            LOGGER.error("Exception occurred", e);
-        }
-
-    }
 
     @Override
     public List<Fine> getFineForCardId(SearchQuery searchQuery) {
@@ -502,18 +398,58 @@ public class LibraryServicesImpl implements LibraryServices {
         return fines;
     }
 
+    @Override
+    public List<com.library.dto.Book> searchBooks(String query, int page, int size) {
 
-    @PostConstruct
-    public void loadClassifier(){
-        try {
-            LOGGER.debug("Classifier loading started");
-            ClassLoader classLoader = LibraryServicesImpl.class.getClassLoader();
-            File file = new File(classLoader.getResource("nlp/english.all.3class.distsim.crf.ser.gz").getFile());
-            this.classifier = CRFClassifier.getClassifier(file);
-            LOGGER.debug("Classifier loaded successfully");
-        } catch (Exception e){
-            LOGGER.error("Error while loading classifier", e);
+        if (query.matches("^(\\d{13})?$")) {
+            Book book = bookRepository.findById(query).get();
+            List<Book> books = new ArrayList<>();
+            books.add(book);
+            return mapBooksToBooksDto(books);
         }
+        Feature feature = this.nlpQuery.getQuery(query);
+        if (feature.getFeatureType() == FeatureType.AUTHOR) {
+            List<com.library.entity.Author> authors = authorRepository.findByName(feature.getQuery());
+            List<Book> bookList = authors.stream().flatMap(x -> x.getBooks().stream()).collect(Collectors.toList());
+            return mapBooksToBooksDto(bookList);
+        } else {
+            if (size > 100) {
+                size = 100;
+            }
+            return mapBooksToBooksDto(bookRepository.findByTitleIgnoreCaseContaining(feature.getQuery(), PageRequest.of(page, size)).getContent());
+        }
+    }
+
+
+    /**
+     * Map books to books DTO
+     * @param books
+     * @return
+     */
+    private List<com.library.dto.Book> mapBooksToBooksDto(List<Book> books) {
+
+        List<com.library.dto.Book> list = new ArrayList<>();
+
+        books.forEach(x -> {
+
+            com.library.dto.Book book = new com.library.dto.Book();
+            book.setTitle(x.getTitle());
+            book.setCover(x.getCover());
+            book.setPages(x.getPages());
+
+            List<Author> author = new ArrayList<>();
+            x.getAuthors().forEach(y -> {
+                Author author1 = new Author();
+                author1.setName(y.getName());
+                author.add(author1);
+            });
+            book.setAuthor(author);
+            list.add(book);
+        });
+
+
+        return list;
+
     }
 
 }

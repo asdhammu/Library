@@ -18,6 +18,7 @@ public class Configuration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "config_id")
     private Long configId;
 
     @Enumerated(EnumType.STRING)

@@ -14,11 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,10 +44,9 @@ public class LibraryController {
         return new ResponseEntity<>(libraryServices.addBookLoan(bookLoanRequest), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public ResponseEntity<List<SearchResult>> search(@RequestBody SearchQuery query) {
-
-        return new ResponseEntity<>(libraryServices.search(query), HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam(name = "q") String query, @RequestParam(name = "p") int page, @RequestParam(name = "s") int size) {
+        return ResponseEntity.ok(libraryServices.searchBooks(query, page, size));
     }
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET, produces = "application/json")

@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Rx';
 @Injectable()
 export class LibraryService {
 
-  private apiURL = 'http://localhost:8080/LibraryManagement/';
+  private apiURL = 'http://localhost:8080/';
 
   constructor(private http: HttpClient) {
   }
@@ -26,7 +26,7 @@ export class LibraryService {
   }
 
   search(searchQuery: string): Observable<any> {
-    return this.http.get(this.apiURL + 'search?q=' + searchQuery);
+    return this.http.get(this.apiURL + 'search?q=' + searchQuery + '&p=0&s=10');
   }
 
   addLoan(bookLoan: BookLoan): Observable<any> {
