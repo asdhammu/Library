@@ -1,15 +1,11 @@
 package com.library.controller;
 
 import com.library.entity.Borrower;
-import com.library.entity.Fine;
 import com.library.modal.*;
 import com.library.services.LibraryServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class LibraryController {
@@ -17,7 +13,7 @@ public class LibraryController {
     @Autowired
     LibraryServices libraryServices;
 
-    @RequestMapping(value = "/addBorrower", method = RequestMethod.POST)
+    @PostMapping(value = "/borrower")
     public ResponseEntity<?> addBorrower(@RequestBody BorrowerData borrowerData) {
 
         Borrower borrower = new Borrower();
@@ -28,10 +24,9 @@ public class LibraryController {
         return ResponseEntity.ok(libraryServices.addBorrower(borrower));
     }
 
-    @RequestMapping(value = "/checkoutBook", method = RequestMethod.POST)
-    public ResponseEntity<RestResponse> checkoutBook(@RequestBody BookLoanRequest bookLoanRequest) {
-
-        return new ResponseEntity<>(libraryServices.addBookLoan(bookLoanRequest), HttpStatus.OK);
+    @PostMapping(value = "/checkoutBook")
+    public ResponseEntity<?> checkoutBook(@RequestBody BookLoanRequest bookLoanRequest) {
+        return ResponseEntity.ok(libraryServices.addBookLoan(bookLoanRequest));
     }
 
     @GetMapping("/search")
@@ -39,34 +34,34 @@ public class LibraryController {
         return ResponseEntity.ok(libraryServices.searchBooks(query, page, size));
     }
 
-    @RequestMapping(value = "/searchCheckedInBooks", method = RequestMethod.POST)
-    public ResponseEntity<?> searchToCheckIn(@RequestBody CheckInBook book) {
-        return ResponseEntity.ok(libraryServices.searchCheckedInBooks(book));
+    @GetMapping(value = "/searchCheckedInBooks")
+    public ResponseEntity<?> searchToCheckIn(String name, int cardId, String isbn) {
+        return ResponseEntity.ok(libraryServices.searchBooksForBorrower(name, cardId, isbn));
     }
 
-    @RequestMapping(value = "/checkInBook", method = RequestMethod.POST)
+    @PostMapping(value = "/checkInBook")
     public ResponseEntity<?> checkInBook(@RequestBody CheckInBook book) {
         return ResponseEntity.ok(libraryServices.checkInBook(book));
     }
 
-    @RequestMapping(value = "/addOrUpdateFine", method = RequestMethod.POST)
-    public ResponseEntity<RestResponse> addOrUpdateFine() {
-        return new ResponseEntity<>(libraryServices.addFine(), HttpStatus.OK);
+    @PostMapping(value = "/addOrUpdateFine")
+    public ResponseEntity<?> addOrUpdateFine() {
+        return ResponseEntity.ok(libraryServices.calculateFines());
     }
 
-    @RequestMapping(value = "/getAllFines", method = RequestMethod.GET)
-    public ResponseEntity<List<FineResponse>> getAllFines() {
-        return new ResponseEntity<>(libraryServices.getAllFines(), HttpStatus.OK);
+    @GetMapping(value = "/fines")
+    public ResponseEntity<?> getAllFines() {
+        return ResponseEntity.ok(libraryServices.getAllFines());
     }
 
-    @RequestMapping(value = "/payFine", method = RequestMethod.POST)
-    public ResponseEntity<RestResponse> payFine(@RequestBody SearchQuery paid) {
-        return new ResponseEntity<RestResponse>(libraryServices.payFine(Integer.parseInt(paid.getQuery())), HttpStatus.OK);
+    @PostMapping(value = "/payFine")
+    public ResponseEntity<?> payFine(@RequestBody int cardId) {
+        return ResponseEntity.ok(libraryServices.payFine(cardId));
     }
 
-    @RequestMapping(value = "/getFineForCardId", method = RequestMethod.GET)
-    public ResponseEntity<List<Fine>> getFineForCardId(@RequestBody SearchQuery query) {
-        return new ResponseEntity<>(libraryServices.getFineForCardId(query), HttpStatus.OK);
+    @GetMapping(value = "/getFineForCardId")
+    public ResponseEntity<?> getFineForCardId(@RequestParam("cardId") int cardId) {
+        return ResponseEntity.ok(libraryServices.getFineForCardId(cardId));
     }
 
 }

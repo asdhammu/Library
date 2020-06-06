@@ -28,7 +28,7 @@ export class PayComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => this.cardId = params['cardId']);
-    this.libraryService.getFineForCardId(this.cardId, "false").subscribe(response => this.fine = response);
+    this.libraryService.getFineForCardId(this.cardId).subscribe(response => this.fine = response);
   }
 
   payFine(fine: number) {
@@ -37,7 +37,7 @@ export class PayComponent implements OnInit {
 
   onChange(s: string) {
     this.restResponse = null;
-    this.libraryService.getFineForCardId(this.cardId, this.selectedValue).subscribe(response => this.fine = response);
+    this.libraryService.getFineForCardId(this.cardId).subscribe(response => this.fine = response);
   }
 
 }

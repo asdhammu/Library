@@ -1,12 +1,6 @@
 package com.library.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +25,7 @@ public class Borrower {
     @Column(name = "phone")
     private String phone;
 
-    @OneToMany()
+    @OneToMany(mappedBy = "borrower", fetch = FetchType.LAZY)
     private List<BookLoan> bookLoans = new ArrayList<>();
 
     public Borrower() {

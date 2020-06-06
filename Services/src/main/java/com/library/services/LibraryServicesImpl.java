@@ -5,7 +5,9 @@ import com.library.entity.Book;
 import com.library.entity.BookLoan;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
+import com.library.error.BookNotAvailableException;
 import com.library.error.BorrowerExistsException;
+import com.library.error.BorrowerThresholdException;
 import com.library.error.NoSuchBorrowerException;
 import com.library.modal.*;
 import com.library.nlp.*;
@@ -21,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,42 +113,29 @@ public class LibraryServicesImpl implements LibraryServices {
         return new ArrayList<>();
     }
 
-    public RestResponse addFine() {
+    public String calculateFines() {
+        List<BookLoan> bookLoans = bookLoanRepository.findAllByDateInIsNull();
+        Fine fine;
+        LocalDateTime date = LocalDateTime.now();
+        for (BookLoan bookLoan : bookLoans) {
+            if (bookLoan.getDueDate().isBefore(date)) {
 
-        RestResponse response = new RestResponse();
-
-        try {
-            List<BookLoan> bookLoans = bookLoanRepository.findAllByDateInIsNull();
-            Fine fine = null;
-            LocalDateTime date = LocalDateTime.now();
-            for (BookLoan bookLoan : bookLoans) {
-
-                if (bookLoan.getDueDate().isBefore(date)) {
-
-                    if (bookLoan.getFine() == null) {
-                        fine = new Fine(bookLoan);
-                    } else {
-                        fine = bookLoan.getFine();
-                    }
-                    long daysOverDue = Duration.between(date.toLocalDate(), bookLoan.getDueDate().toLocalDate()).toDays();
-                    fine.setFineAmount(Double.toString(daysOverDue * 0.25));
-                    fineRepository.save(fine);
+                if (bookLoan.getFine() == null) {
+                    fine = new Fine(bookLoan);
+                } else {
+                    fine = bookLoan.getFine();
                 }
+                long daysOverDue = Duration.between(date.toLocalDate(), bookLoan.getDueDate().toLocalDate()).toDays();
+                fine.setFineAmount(Double.toString(daysOverDue * 0.25));
+                fineRepository.save(fine);
             }
-            response.setSuccess(true);
-            response.setResult("Fine updated successfully");
-
-        } catch (Exception e) {
-            response.setError("Error while updating. Try Again");
-            response.setSuccess(false);
         }
 
-        return response;
+        return "All fines calculated";
     }
 
     @Override
-    public RestResponse payFine(int cardId) {
-        RestResponse response = new RestResponse();
+    public String payFine(int cardId) {
         Borrower borrower = borrowerRepository.findByCardId(cardId).get();
         if (borrower == null) {
             throw new NoSuchBorrowerException("No such borrower exists");
@@ -157,45 +143,27 @@ public class LibraryServicesImpl implements LibraryServices {
 
         List<BookLoan> bookLoans = borrower.getBookLoans();
         if (bookLoans.isEmpty()) {
-            response.setError("This borrower has not loaned this book");
-            response.setSuccess(false);
-            return response;
+            throw new BorrowerThresholdException("Borrower has loaned three books.");
         }
 
         for (BookLoan bookLoan : bookLoans) {
             bookLoan.getFine().setPaid(true);
             bookLoanRepository.save(bookLoan);
         }
-
-        response.setResult("Fine paid successfully");
-        response.setSuccess(true);
-        return response;
+        return "Paid";
     }
 
     @Override
-    public RestResponse checkInBook(CheckInBook book) {
-
-        RestResponse response = new RestResponse();
-
-        try {
-            bookRepository.findById(book.getIsbn()).get();
-            BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
-                    bookRepository.findById(book.getIsbn()).get()).get(0);
-            bookLoan.setDateIn(LocalDateTime.now());
-            Book book1 = bookRepository.findById(book.getIsbn()).get();
-            book1.setAvailable(true);
-            bookRepository.save(book1);
-            bookLoanRepository.save(bookLoan);
-
-            response.setSuccess(true);
-            response.setResult("Book Checked In Successfully");
-        } catch (Exception exception) {
-
-            response.setSuccess(false);
-            response.setError("Error Occurred. Try after some time");
-        }
-
-        return response;
+    public String checkInBook(CheckInBook book) {
+        bookRepository.findById(book.getIsbn()).get();
+        BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
+                bookRepository.findById(book.getIsbn()).get()).get(0);
+        bookLoan.setDateIn(LocalDateTime.now());
+        Book book1 = bookRepository.findById(book.getIsbn()).get();
+        book1.setAvailable(true);
+        bookRepository.save(book1);
+        bookLoanRepository.save(bookLoan);
+        return "Book Checked In`";
 
     }
 
@@ -259,31 +227,24 @@ public class LibraryServicesImpl implements LibraryServices {
     }
 
     @Override
-    public RestResponse addBookLoan(BookLoanRequest bookLoanRequest) {
+    public String addBookLoan(BookLoanRequest bookLoanRequest) {
 
         String isbn = bookLoanRequest.getIsbn();
         int borrowerId = bookLoanRequest.getBorrowerId();
-        RestResponse response = new RestResponse();
 
         if (!borrowerRepository.findByCardId(borrowerId).isPresent()) {
-            response.setError("Borrower not in the database");
-            response.setSuccess(false);
-            return response;
+            throw new NoSuchBorrowerException("No such borrower");
         }
 
         List<BookLoan> bookLoans = bookLoanRepository.findByBorrower(borrowerRepository.findByCardId(borrowerId).get()).stream().filter(x -> x.getDateIn() == null)
                 .collect(Collectors.toList());
         if (bookLoans.size() > 2) {
-            response.setError("3 Book have been issued to the borrower");
-            response.setSuccess(false);
-            return response;
+            throw new BorrowerThresholdException("3 Book have been issued to the borrower");
         }
 
         Book book = bookRepository.findById(isbn).get();
         if (book == null || !book.isAvailable()) {
-            response.setSuccess(false);
-            response.setError("Book is not available. It's checked out");
-            return response;
+            throw new BookNotAvailableException("Book is not available. All books have been checked out");
         }
 
         Borrower borrower = borrowerRepository.findByCardId(borrowerId).get();
@@ -291,112 +252,20 @@ public class LibraryServicesImpl implements LibraryServices {
         BookLoan bookLoan = new BookLoan(borrower, book1);
         bookLoan.setDateOut(LocalDateTime.now());
         bookLoan.setDueDate(LocalDateTime.now().minusDays(-14));
+        bookLoan.setBorrower(borrower);
         book.setAvailable(false);
+        bookLoanRepository.save(bookLoan);
         bookRepository.save(book);
-        response.setResult("Added Successfully");
-        response.setSuccess(true);
 
-        return response;
-    }
-
-    /**
-     * Searches book catalog and returns result with author details and
-     * availability
-     *//*
-    public List<SearchResult> search(SearchQuery searchQuery) {
-
-        List<SearchResult> result = new ArrayList<>();
-
-        // regex for 13 digits i.e. ISBN number with 13 digits
-        if (searchQuery.getQuery().matches("^(\\d{13})?$")) {
-
-            Book book = bookRepository.findById(searchQuery.getQuery()).get();
-            List<Book> books = new ArrayList<>();
-            books.add(book);
-            prepareSearchResult(result, books);
-            return result;
-        }
-
-        StringBuffer bookNameQuery = new StringBuffer();
-        StringBuffer authorQuery = new StringBuffer();
-
-        StringBuilder capitalizeString = new StringBuilder();
-        String[] str = searchQuery.getQuery().split(" ");
-        for (int i = 0; i < str.length; i++) {
-            capitalizeString.append(str[i].substring(0, 1).toUpperCase() + str[i].substring(1) + " ");
-        }
-        capitalizeString.deleteCharAt(capitalizeString.length() - 1);
-        searchQuery.setQuery(capitalizeString.toString());
-
-        extractNameUsingStanfordNLP(searchQuery.getQuery(), bookNameQuery, authorQuery);
-
-*//*
-        hqlQuery = "from Book b, author a, BookAuthor ba where a.author_id= ba.author.author_id and b.ISBN = ba.book.ISBN and b.title like '%"
-                + bookNameQuery + "%' and a.name like '%" + authorQuery + "%'";
-*//*
-
-        // List<Book> books = bookRepository.findByTitleIgnoreCaseContaining(bookNameQuery.toString());
-
-        prepareSearchResult(result, new ArrayList<>());
-
-        return result;
-    }
-*/
-    /**
-     * Prepares the result
-     *
-     * @param result
-     * @param list
-     */
-    private void prepareSearchResult(List<SearchResult> result, List<Book> list) {
-
-        Map<String, SearchResult> isbn = new HashMap<>();
-        for (Book b : list) {
-
-            if (isbn.containsKey(b.getIsbn())) {
-
-                SearchResult searchResult = isbn.get(b.getIsbn());
-                searchResult.setAuthor(b.getAuthors());
-                isbn.put(b.getIsbn(), searchResult);
-
-            } else {
-                SearchResult result2 = new SearchResult();
-                result2.setCover(b.getCover());
-                result2.setAvailable(b.isAvailable());
-                result2.setISBN(b.getIsbn());
-                result2.setTitle(b.getTitle());
-                result2.setPublisher(b.getPublisher());
-                result2.setPages(b.getPages());
-                result2.setAuthor(b.getAuthors());
-                isbn.put(b.getIsbn(), result2);
-            }
-        }
-
-        for (Map.Entry<String, SearchResult> map : isbn.entrySet()) {
-            result.add(map.getValue());
-        }
+        return "Book checked out";
     }
 
 
     @Override
-    public List<Fine> getFineForCardId(SearchQuery searchQuery) {
-        boolean isPaid = Boolean.parseBoolean(searchQuery.getPaid());
-        Borrower borrower = borrowerRepository.findByCardId(Integer.parseInt(searchQuery.getQuery())).get();
+    public List<Fine> getFineForCardId(int cardId) {
+        Borrower borrower = borrowerRepository.findByCardId(cardId).get();
         List<BookLoan> bookLoans = borrower.getBookLoans();
-
-        List<Fine> fines = new ArrayList<>();
-        for (BookLoan bookLoan : bookLoans) {
-            if (bookLoan.getFine() != null) {
-                if (isPaid && bookLoan.getFine().isPaid()) {
-                    fines.add(bookLoan.getFine());
-                }
-                if (!isPaid && !bookLoan.getFine().isPaid()) {
-                    fines.add(bookLoan.getFine());
-                }
-            }
-        }
-
-        return fines;
+        return bookLoans.stream().map(x -> x.getFine()).collect(Collectors.toList());
     }
 
     @Override
@@ -422,9 +291,24 @@ public class LibraryServicesImpl implements LibraryServices {
         }
     }
 
+    @Override
+    public List<com.library.dto.Book> searchBooksForBorrower(String borrowerName, int cardId, String isbn) {
+
+        Optional<Borrower> borrower = borrowerRepository.findByCardId(cardId);
+        if (!borrower.isPresent()) {
+            throw new NoSuchBorrowerException("No borrower exists for this card Id");
+        }
+
+        List<Book> bookList = borrower.get().getBookLoans().stream().map(x -> x.getBook()).collect(Collectors.toList());
+
+
+        return mapBooksToBooksDto(bookList);
+    }
+
 
     /**
      * Map books to books DTO
+     *
      * @param books
      * @return
      */

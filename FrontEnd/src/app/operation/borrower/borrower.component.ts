@@ -13,11 +13,14 @@ export class BorrowerComponent {
 
   borrower = new Borrower('', '', '', '');
 
-  restResponse: RestResponse;
   constructor(
     private libraryService: LibraryService) { }
 
   addBorrower(): void {
-    this.libraryService.addBorrower(this.borrower).subscribe(result => this.restResponse = result);
+    this.libraryService.addBorrower(this.borrower).subscribe(x => {
+      console.log('borrower has been added');
+    }, e => {
+      console.log('error whie adding');
+    });
   }
 }

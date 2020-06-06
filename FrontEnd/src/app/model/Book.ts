@@ -1,15 +1,15 @@
-import {Author} from "./Author";
+import { Author } from "./author";
 /**
  * Created by asdha on 3/14/2017.
  */
-export class Book{
+export class Book {
 
-  public isbn:string;
-  public title:string;
-  public cover:string;
-  public pages:string;
-  public available:boolean;
-  public author:Author[];
+  public isbn: string;
+  public title: string;
+  public cover: string;
+  public pages: string;
+  public available: boolean;
+  public author: Author[];
 
 
 }

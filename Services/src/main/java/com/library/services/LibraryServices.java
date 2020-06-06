@@ -16,21 +16,22 @@ public interface LibraryServices {
 
 	com.library.dto.Borrower addBorrower(Borrower borrower);
 
-	RestResponse addFine();
+	String calculateFines();
 
-	RestResponse payFine(int cardId);
+	String payFine(int cardId);
 
-	RestResponse addBookLoan(BookLoanRequest bookLoanRequest);
+	String addBookLoan(BookLoanRequest bookLoanRequest);
 
 	List<SearchResult> searchCheckedInBooks(CheckInBook book);
 	
-	RestResponse checkInBook(CheckInBook book);
+	String checkInBook(CheckInBook book);
 
 	List<FineResponse> getAllFines();
 	
-	List<Fine> getFineForCardId(SearchQuery query);
+	List<Fine> getFineForCardId(int cardId);
 
 	List<Book> searchBooks(String query, int page, int size);
 
+	List<Book> searchBooksForBorrower(String borrowerName, int cardId, String isbn);
 
 }

@@ -15,14 +15,7 @@ export class LibraryService {
   }
 
   addBorrower(borrower: Borrower): Observable<any> {
-    let payload = {
-      'name': borrower.name,
-      'ssn': borrower.ssn,
-      'address': borrower.address,
-      'phone': borrower.phone
-    };
-
-    return this.http.post(this.apiURL + 'addBorrower', JSON.stringify(payload));
+    return this.http.post(this.apiURL + 'borrower', borrower);
   }
 
   search(searchQuery: string): Observable<any> {
@@ -30,40 +23,36 @@ export class LibraryService {
   }
 
   addLoan(bookLoan: BookLoan): Observable<any> {
-    let data = { 'isbn': bookLoan.isbn, 'borrowerId': bookLoan.borrowerId };
-    return this.http.post(this.apiURL + 'checkoutBook', JSON.stringify(data));
+    // let data = { 'isbn': bookLoan.isbn, 'borrowerId': bookLoan.borrowerId };
+    return this.http.post(this.apiURL + 'checkoutBook', bookLoan);
   }
 
   addOrUpdateFine(): Observable<any> {
-    return this.http.get(this.apiURL + 'addOrUpdateFine');
+    return this.http.post(this.apiURL + 'addOrUpdateFine', {});
   }
 
   searchToCheckIn(checkIn: CheckInBookModel): Observable<any> {
-
-    let data = { 'isbn': checkIn.isbn, 'name': checkIn.name, 'cardId': checkIn.cardId };
-    return this.http.post(this.apiURL + 'searchCheckedInBooks', JSON.stringify(data));
+    return this.http.get(this.apiURL + 'searchCheckedInBooks?name=' +
+      checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn);
 
   }
 
 
   checkIn(isbn: string, cardId: string): Observable<any> {
     let data = { 'isbn': isbn, 'cardId': cardId };
-    return this.http.post(this.apiURL + 'checkInBook', JSON.stringify(data));
+    return this.http.post(this.apiURL + 'checkInBook', data);
   }
 
   showFines(): Observable<any> {
-    return this.http.get(this.apiURL + 'getAllFines');
+    return this.http.get(this.apiURL + 'fines');
   }
 
   payFine(cardId: number): Observable<any> {
-    let data = { 'query': cardId };
-    return this.http.post(this.apiURL + 'payFine', JSON.stringify(data));
-
+    return this.http.post(this.apiURL + 'payFine', cardId);
   }
 
-  getFineForCardId(cardId: number, paid: string): Observable<any> {
-    let data = { 'query': cardId, 'paid': paid };
-    return this.http.post(this.apiURL + 'getFineForCardId', JSON.stringify(data))
+  getFineForCardId(cardId: number): Observable<any> {
+    return this.http.get(this.apiURL + 'getFineForCardId?cardId=' + cardId);
   }
 
 }
