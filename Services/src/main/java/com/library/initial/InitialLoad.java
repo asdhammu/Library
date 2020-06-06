@@ -2,8 +2,11 @@ package com.library.initial;
 
 import com.library.entity.Author;
 import com.library.entity.Book;
+import com.library.entity.Configuration;
+import com.library.modal.Status;
 import com.library.repository.AuthorRepository;
 import com.library.repository.BookRepository;
+import com.library.repository.ConfigurationRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +33,17 @@ public class InitialLoad {
     BookRepository bookRepository;
 
     @Autowired
+    ConfigurationRepository configurationRepository;
+
+    @Autowired
     AuthorRepository authorRepository;
 
     public void load() {
+
+        if(configurationRepository.findAll().size() > 0 && configurationRepository.findAll().get(0).getStatus().equals(Status.COMPLETED)){
+            LOGGER.info("Data has been loaded");
+            return;
+        }
 
         LOGGER.info("Initial Load started");
 
@@ -41,6 +52,9 @@ public class InitialLoad {
         try {
             ClassLoader classLoader = InitialLoad.class.getClassLoader();
             bufferedReader = new BufferedReader(new FileReader(classLoader.getResource("books.csv").getFile()));
+            Configuration configuration = new Configuration();
+            configuration.setStatus(Status.COMPLETED);
+            configurationRepository.save(configuration);
             while ((line = bufferedReader.readLine()) != null) {
                 String[] s = line.split("\\t");
                 if (s[0].equalsIgnoreCase("isbn10")) continue;
@@ -97,22 +111,6 @@ public class InitialLoad {
             System.out.println(book.getAuthors());
             throw e;
         }
-
-        // book = bookRepository.saveAndFlush(book);
-//        for(String name: set){
-//            Author author = authorRepository.findByName(name);
-//            if(author == null){
-//                author = new Author();
-//                author.setName(name);
-//            }
-//            author.getBooks().add(book);
-//            book.getAuthors().add(author);
-//
-//            authorRepository.save(author);
-//        }
-
-
-        // bookRepository.saveAndFlush(book);
     }
 
 }
