@@ -2,24 +2,15 @@ package com.library.controller;
 
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
-import com.library.modal.BookLoanRequest;
-import com.library.modal.BorrowerData;
-import com.library.modal.CheckInBook;
-import com.library.modal.FineResponse;
-import com.library.modal.RestResponse;
-import com.library.modal.SearchQuery;
-import com.library.modal.SearchResult;
+import com.library.modal.*;
 import com.library.services.LibraryServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
-@Controller
 @RestController
 public class LibraryController {
 
@@ -27,15 +18,14 @@ public class LibraryController {
     LibraryServices libraryServices;
 
     @RequestMapping(value = "/addBorrower", method = RequestMethod.POST)
-    public ResponseEntity<RestResponse> addBorrower(@RequestBody BorrowerData borrowerData) {
+    public ResponseEntity<?> addBorrower(@RequestBody BorrowerData borrowerData) {
 
         Borrower borrower = new Borrower();
         borrower.setbName(borrowerData.getName());
         borrower.setAddress(borrowerData.getAddress());
         borrower.setPhone(borrowerData.getPhone());
         borrower.setSsn(borrowerData.getSsn());
-
-        return new ResponseEntity<>(libraryServices.addBorrower(borrower), HttpStatus.OK);
+        return ResponseEntity.ok(libraryServices.addBorrower(borrower));
     }
 
     @RequestMapping(value = "/checkoutBook", method = RequestMethod.POST)
@@ -49,25 +39,14 @@ public class LibraryController {
         return ResponseEntity.ok(libraryServices.searchBooks(query, page, size));
     }
 
-    @RequestMapping(value = "/hello", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<String> getString() {
-
-        return new ResponseEntity<>("Hello", HttpStatus.OK);
-
-    }
-
     @RequestMapping(value = "/searchCheckedInBooks", method = RequestMethod.POST)
-    public ResponseEntity<List<SearchResult>> searchToCheckIn(@RequestBody CheckInBook book) {
-
-        return new ResponseEntity<>(libraryServices.searchCheckedInBooks(book), HttpStatus.OK);
-
+    public ResponseEntity<?> searchToCheckIn(@RequestBody CheckInBook book) {
+        return ResponseEntity.ok(libraryServices.searchCheckedInBooks(book));
     }
 
     @RequestMapping(value = "/checkInBook", method = RequestMethod.POST)
-    public ResponseEntity<RestResponse> checkInBook(@RequestBody CheckInBook book) {
-
-        return new ResponseEntity<>(libraryServices.checkInBook(book), HttpStatus.OK);
-
+    public ResponseEntity<?> checkInBook(@RequestBody CheckInBook book) {
+        return ResponseEntity.ok(libraryServices.checkInBook(book));
     }
 
     @RequestMapping(value = "/addOrUpdateFine", method = RequestMethod.POST)
@@ -88,14 +67,6 @@ public class LibraryController {
     @RequestMapping(value = "/getFineForCardId", method = RequestMethod.GET)
     public ResponseEntity<List<Fine>> getFineForCardId(@RequestBody SearchQuery query) {
         return new ResponseEntity<>(libraryServices.getFineForCardId(query), HttpStatus.OK);
-    }
-
-    public LibraryServices getLibraryServices() {
-        return libraryServices;
-    }
-
-    public void setLibraryServices(LibraryServices libraryServices) {
-        this.libraryServices = libraryServices;
     }
 
 }

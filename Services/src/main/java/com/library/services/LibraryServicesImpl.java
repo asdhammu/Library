@@ -6,6 +6,7 @@ import com.library.entity.BookLoan;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
 import com.library.error.BorrowerExistsException;
+import com.library.error.NoSuchBorrowerException;
 import com.library.modal.*;
 import com.library.nlp.*;
 import com.library.repository.*;
@@ -86,29 +87,31 @@ public class LibraryServicesImpl implements LibraryServices {
 
     public List<FineResponse> getAllFines() {
 
-        Session session = this.sessionFactory.openSession();
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("select b.card_id , sum(fine_amt) from fine f ,book_loan b where b.loan_id= f.loan_id and f.paid=0 group by b.card_id");
-
-        Query query = session.createSQLQuery(builder.toString());
-
-        List<Object[]> object = query.list();
-
-        List<FineResponse> fineResponses = new ArrayList<>();
-
-        for (Object[] object2 : object) {
-            FineResponse fineResponse = new FineResponse();
-            fineResponse.setCardId((Integer) object2[0]);
-            fineResponse.setAmount(Double.toString((Double) object2[1]));
-
-            fineResponses.add(fineResponse);
-        }
-
-        session.close();
+        List<Fine> fines = fineRepository.findAllFinesWithSum();
+//        Session session = this.sessionFactory.openSession();
+//        StringBuilder builder = new StringBuilder();
+//
+//        builder.append("select b.card_id , sum(fine_amt) from fine f ,book_loan b where b.loan_id= f.loan_id and f.paid=0 group by b.card_id");
+//
+//        Query query = session.createSQLQuery(builder.toString());
 
 
-        return fineResponses;
+//        List<Object[]> object = query.list();
+//
+//        List<FineResponse> fineResponses = new ArrayList<>();
+//
+//        for (Object[] object2 : object) {
+//            FineResponse fineResponse = new FineResponse();
+//            fineResponse.setCardId((Integer) object2[0]);
+//            fineResponse.setAmount(Double.toString((Double) object2[1]));
+//
+//            fineResponses.add(fineResponse);
+//        }
+
+        // session.close();
+
+
+        return new ArrayList<>();
     }
 
     public RestResponse addFine() {
@@ -149,9 +152,7 @@ public class LibraryServicesImpl implements LibraryServices {
         RestResponse response = new RestResponse();
         Borrower borrower = borrowerRepository.findByCardId(cardId).get();
         if (borrower == null) {
-            response.setError("No such borrower");
-            response.setSuccess(false);
-            return response;
+            throw new NoSuchBorrowerException("No such borrower exists");
         }
 
         List<BookLoan> bookLoans = borrower.getBookLoans();
@@ -187,7 +188,7 @@ public class LibraryServicesImpl implements LibraryServices {
             bookLoanRepository.save(bookLoan);
 
             response.setSuccess(true);
-            response.setResult("Book Checked In Succesfully");
+            response.setResult("Book Checked In Successfully");
         } catch (Exception exception) {
 
             response.setSuccess(false);
@@ -408,8 +409,9 @@ public class LibraryServicesImpl implements LibraryServices {
             return mapBooksToBooksDto(books);
         }
         Feature feature = this.nlpQuery.getQuery(query);
+        LOGGER.info("Feature is " + feature);
         if (feature.getFeatureType() == FeatureType.AUTHOR) {
-            List<com.library.entity.Author> authors = authorRepository.findByName(feature.getQuery());
+            List<com.library.entity.Author> authors = authorRepository.findByNameIgnoreCaseContaining(feature.getQuery());
             List<Book> bookList = authors.stream().flatMap(x -> x.getBooks().stream()).collect(Collectors.toList());
             return mapBooksToBooksDto(bookList);
         } else {
@@ -433,6 +435,7 @@ public class LibraryServicesImpl implements LibraryServices {
         books.forEach(x -> {
 
             com.library.dto.Book book = new com.library.dto.Book();
+            book.setISBN(x.getIsbn());
             book.setTitle(x.getTitle());
             book.setCover(x.getCover());
             book.setPages(x.getPages());

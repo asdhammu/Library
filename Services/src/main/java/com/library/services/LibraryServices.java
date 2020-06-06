@@ -22,8 +22,6 @@ public interface LibraryServices {
 
 	RestResponse addBookLoan(BookLoanRequest bookLoanRequest);
 
-// 	List<SearchResult> search(SearchQuery query);
-
 	List<SearchResult> searchCheckedInBooks(CheckInBook book);
 	
 	RestResponse checkInBook(CheckInBook book);

@@ -19,4 +19,12 @@ public class Feature {
     public void setFeatureType(FeatureType featureType) {
         this.featureType = featureType;
     }
+
+    @Override
+    public String toString() {
+        return "Feature{" +
+                "query='" + query + '\'' +
+                ", featureType=" + featureType +
+                '}';
+    }
 }

@@ -2,6 +2,7 @@ package com.library.config;
 
 
 import com.library.error.BorrowerExistsException;
+import com.library.error.NoSuchBorrowerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,6 +24,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(NoSuchBorrowerException.class)
+    public final ResponseEntity<ErrorDetail> handleNoSuchBorrowerException(NoSuchBorrowerException ex, WebRequest request) {
+        ErrorDetail errorDetails = new ErrorDetail(new Date(), ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
 }
 
 class ErrorDetail {
