@@ -4,8 +4,8 @@
 export class CheckInBookModel {
 
   constructor(public isbn: string,
-              public cardId: string,
-              public name: string,) {
+    public cardId: string,
+    public name: string) {
   }
 
 }

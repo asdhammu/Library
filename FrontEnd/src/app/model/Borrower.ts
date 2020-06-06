@@ -1,12 +1,7 @@
 export class Borrower {
-
-	public cardId: string;
-	constructor(
-		public name: string,
-		public ssn: string,
-		public address: string,
-		public phone: string
-
-	) { }
-
+	cardId: string;
+	name: string;
+	address: string;
+	ssn: string;
+	phone: string;
 }

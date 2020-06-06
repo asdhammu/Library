@@ -49,20 +49,7 @@ public class LibraryServicesImpl implements LibraryServices {
     NLPQuery nlpQuery;
 
     public LibraryServicesImpl() {
-
         nlpQuery = NLPFactory.getSource(NLPResource.STANFORD);
-    }
-
-
-    private SessionFactory sessionFactory;
-
-    public SessionFactory getSessionFactory() {
-
-        return sessionFactory;
-    }
-
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
     }
 
 
@@ -167,65 +154,6 @@ public class LibraryServicesImpl implements LibraryServices {
 
     }
 
-    public List<SearchResult> searchCheckedInBooks(CheckInBook book) {
-
-        if (book.getIsbn().length() > 0 && book.getIsbn().length() == 13) {
-            SearchQuery query = new SearchQuery();
-            query.setQuery(book.getIsbn());
-            List<SearchResult> result = new ArrayList<>();
-
-//            for (SearchResult result2 : this.search(query)) {
-//                if (!result2.isAvailable()) {
-//                    result.add(result2);
-//                }
-//            }
-            return result;
-        }
-
-        String name = book.getName();
-        int cardId = book.getCardId();
-
-        List<Borrower> borrower = new ArrayList<>();
-
-        if (name.length() > 0 && cardId != 0) {
-            /*queryString = "from Borrower where cardId=" + cardId + " or bName like '%" + name
-                    + "%'";
-*/
-            borrower.addAll(borrowerRepository.findByCardIdOrBNameIgnoreCaseContaining(cardId, name));
-
-        } else if (name.length() > 0) {
-            //queryString = "from Borrower where bName like '%" + name + "%'";
-            borrower.addAll(borrowerRepository.findByBNameIgnoreCaseContaining(name));
-        } else if (name.length() == 0) {
-            //queryString = "from Borrower where cardId=" + cardId;
-
-            borrower.add(borrowerRepository.findByCardId(cardId).get());
-        }
-        List<SearchResult> list = new ArrayList<>();
-        for (Borrower borrower2 : borrower) {
-
-            List<BookLoan> bookLoans = borrower2.getBookLoans();
-
-            for (BookLoan bookLoan : bookLoans) {
-                SearchResult result = new SearchResult();
-                if (bookLoan.getDateIn() == null) {
-                    Book book1 = bookRepository.findById(bookLoan.getBook().getIsbn()).get();
-
-                    result.setCover(book1.getCover());
-                    result.setISBN(book1.getIsbn());
-                    result.setTitle(book1.getTitle());
-                    result.setBorrower(borrower2);
-                    list.add(result);
-                }
-
-            }
-        }
-
-        return list;
-
-
-    }
-
     @Override
     public String addBookLoan(BookLoanRequest bookLoanRequest) {
 
@@ -299,10 +227,16 @@ public class LibraryServicesImpl implements LibraryServices {
             throw new NoSuchBorrowerException("No borrower exists for this card Id");
         }
 
-        List<Book> bookList = borrower.get().getBookLoans().stream().map(x -> x.getBook()).collect(Collectors.toList());
+        List<Book> bookList = borrower.get().getBookLoans().stream().filter(y -> y.getDateIn() == null).map(x -> x.getBook()).collect(Collectors.toList());
 
-
-        return mapBooksToBooksDto(bookList);
+        List<com.library.dto.Book> list =  mapBooksToBooksDto(bookList);
+        list.stream().forEach( x -> {
+            com.library.dto.Borrower borrower1 = new com.library.dto.Borrower();
+            borrower1.setName(borrower.get().getbName());
+            borrower1.setCardId(borrower.get().getCardId());
+            x.setBorrower(borrower1);
+        });
+        return list;
     }
 
 
@@ -323,13 +257,14 @@ public class LibraryServicesImpl implements LibraryServices {
             book.setTitle(x.getTitle());
             book.setCover(x.getCover());
             book.setPages(x.getPages());
-
+            book.setAvailable(x.isAvailable());
             List<Author> author = new ArrayList<>();
             x.getAuthors().forEach(y -> {
                 Author author1 = new Author();
                 author1.setName(y.getName());
                 author.add(author1);
             });
+
             book.setAuthor(author);
             list.add(book);
         });

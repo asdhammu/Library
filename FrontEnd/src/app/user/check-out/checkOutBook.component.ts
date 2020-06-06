@@ -4,7 +4,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BookLoan } from '../../model/book-loan';
 import { LibraryService } from '../../services/library.services';
-import { RestResponse } from '../../model/rest-response';
 import { ActivatedRoute, Params } from '@angular/router';
 import 'rxjs/add/operator/switchMap';
 @Component({
@@ -16,7 +15,6 @@ export class CheckOutBookComponent implements OnInit {
 
   bookLoan = new BookLoan('', '');
   isbn: string;
-  restResponse: RestResponse;
 
   constructor(private route: ActivatedRoute,
     private libraryService: LibraryService) {
@@ -34,7 +32,9 @@ export class CheckOutBookComponent implements OnInit {
 
     this.bookLoan.isbn = this.isbn;
 
-    this.libraryService.addLoan(this.bookLoan).subscribe(result => this.restResponse = result);
+    this.libraryService.addLoan(this.bookLoan).subscribe(x => {
+      console.log(x);
+    });
 
   }
 

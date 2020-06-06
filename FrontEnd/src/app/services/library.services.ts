@@ -23,7 +23,6 @@ export class LibraryService {
   }
 
   addLoan(bookLoan: BookLoan): Observable<any> {
-    // let data = { 'isbn': bookLoan.isbn, 'borrowerId': bookLoan.borrowerId };
     return this.http.post(this.apiURL + 'checkoutBook', bookLoan);
   }
 
@@ -36,7 +35,6 @@ export class LibraryService {
       checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn);
 
   }
-
 
   checkIn(isbn: string, cardId: string): Observable<any> {
     let data = { 'isbn': isbn, 'cardId': cardId };

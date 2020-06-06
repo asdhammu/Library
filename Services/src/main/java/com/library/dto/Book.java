@@ -18,6 +18,16 @@ public class Book {
 
     private List<Author> author;
 
+    private Borrower borrower;
+
+    public Borrower getBorrower() {
+        return borrower;
+    }
+
+    public void setBorrower(Borrower borrower) {
+        this.borrower = borrower;
+    }
+
     public String getISBN() {
         return ISBN;
     }

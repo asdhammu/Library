@@ -21,8 +21,6 @@ public interface LibraryServices {
 	String payFine(int cardId);
 
 	String addBookLoan(BookLoanRequest bookLoanRequest);
-
-	List<SearchResult> searchCheckedInBooks(CheckInBook book);
 	
 	String checkInBook(CheckInBook book);
 

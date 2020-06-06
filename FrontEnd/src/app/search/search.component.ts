@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { SearchResult } from '../model/search-result';
 import { LibraryService } from '../services/library.services';
 import { Router } from '@angular/router';
+import { Book } from '../model/Book';
 
 @Component({
   selector: '<search-component>',
@@ -14,14 +14,16 @@ export class SearchComponent {
 
   query: string;
 
-  searchResult: SearchResult[];
+  books: Book[];
 
   constructor(
     private router: Router,
     private libraryService: LibraryService) { }
 
   search(): void {
-    this.libraryService.search(this.query).subscribe(result => this.searchResult = result);
+    this.libraryService.search(this.query).subscribe(x => {
+      this.books = x;
+    });
   }
 
 

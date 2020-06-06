@@ -3,9 +3,9 @@
  */
 import { Component } from '@angular/core';
 import { CheckInBookModel } from '../../model/check-in-book';
-import { SearchResult } from '../../model/search-result';
 import { LibraryService } from '../../services/library.services';
 import { Router } from '@angular/router';
+import { Book } from 'src/app/model/Book';
 
 @Component({
 
@@ -18,14 +18,16 @@ import { Router } from '@angular/router';
 export class SearchCheckInBookComponent {
 
   checkInBook = new CheckInBookModel('', '', '');
-  searchResult: SearchResult[];
+  books: Book[];
   constructor(
     private route: Router,
     private libraryService: LibraryService) { };
 
 
   searchToCheckIn(): void {
-    this.libraryService.searchToCheckIn(this.checkInBook).subscribe(result => this.searchResult = result);
+    this.libraryService.searchToCheckIn(this.checkInBook).subscribe(x => {
+      this.books = x;
+    });
   }
 
   onSubmit(isbn: string, cardId: string): void {

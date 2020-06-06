@@ -3,7 +3,6 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { LibraryService } from '../../services/library.services';
-import { RestResponse } from '../../model/rest-response';
 import { FineResponse } from '../../model/fine-response';
 import { Router } from '@angular/router';
 
@@ -17,10 +16,10 @@ import { Router } from '@angular/router';
 export class FineComponent {
 
   selectedValue = 'false';
-  restResponse: RestResponse;
+  // restResponse: RestResponse;
   showForm: boolean;
   fineResponse: FineResponse[];
-  restResponse1: RestResponse;
+  // restResponse1: RestResponse;
   error: string;
   isError: boolean;
   constructor(
@@ -32,14 +31,15 @@ export class FineComponent {
   addOrUpdateFines(): void {
     this.showForm = false;
     this.fineResponse = null;
-    this.libraryService.addOrUpdateFine().subscribe(response => this.restResponse = response);
+    this.libraryService.addOrUpdateFine().subscribe(x => {
+      console.log('Fines updated');
+    });
   }
 
   showFines(): void {
     this.showForm = true;
     this.error = '';
     this.isError = false;
-    this.restResponse = null;
     this.libraryService.showFines().subscribe(response => this.fineResponse = response,
       () => {
         this.isError = true;

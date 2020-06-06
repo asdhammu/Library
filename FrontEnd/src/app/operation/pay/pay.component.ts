@@ -5,7 +5,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LibraryService } from '../../services/library.services';
 import { ActivatedRoute, Params } from '@angular/router';
-import { RestResponse } from '../../model/rest-response';
 import { FineResponse } from '../../model/fine-response';
 
 @Component({
@@ -21,7 +20,6 @@ export class PayComponent implements OnInit {
   selectedValue: string;
   loanId: number;
   fine: FineResponse[];
-  restResponse: RestResponse;
   constructor(
     public route: ActivatedRoute,
     public libraryService: LibraryService) { }
@@ -32,11 +30,12 @@ export class PayComponent implements OnInit {
   }
 
   payFine(fine: number) {
-    this.libraryService.payFine(fine).subscribe(response => this.restResponse = response);
+    this.libraryService.payFine(fine).subscribe(x => {
+      console.log('fine paid');
+    });
   }
 
   onChange(s: string) {
-    this.restResponse = null;
     this.libraryService.getFineForCardId(this.cardId).subscribe(response => this.fine = response);
   }
 
