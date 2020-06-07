@@ -1,0 +1,25 @@
+<h3> Add Loan for Book</h3>
+<form (ngSubmit)="checkInBook()">
+  <div class="form-group">
+    <div>
+      <label>ISBN</label>
+      {{isbn}}
+    </div>
+    <div>
+      <label>Borrower ID</label>
+      {{cardId}}
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary btn-block">Check In</button>
+    </div>
+  </div>
+</form>
+<div *ngIf="submitted">
+  <div *ngIf="success">
+    {{msg}}
+  </div>
+  <div *ngIf="!success">
+    {{errorMsg}}
+  </div>
+</div>

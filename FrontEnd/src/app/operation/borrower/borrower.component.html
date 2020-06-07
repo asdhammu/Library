@@ -1,0 +1,39 @@
+<h3> Add Borrower</h3>
+<form [formGroup]="borrowerForm">
+  <div>
+    <label>
+      NAME
+      <input type="text" formControlName="name">
+    </label>
+  </div>
+  <div>
+    <label>
+      SSN
+      <input type="text" formControlName="ssn">
+    </label>
+  </div>
+  <div>
+    <label>
+      Address
+      <input type="text" formControlName="address">
+    </label>
+  </div>
+  <div>
+    <label>
+      Phone
+      <input type="text" formControlName="phone">
+    </label>
+  </div>
+  <div>
+    <button mat-stroked-button (click)="addBorrower()">Add Borrower</button>
+  </div>
+</form>
+
+<div *ngIf="submitted">
+  <div *ngIf="success">
+    {{msg}}
+  </div>
+  <div *ngIf="!success">
+    {{errorMsg}}
+  </div>
+</div>

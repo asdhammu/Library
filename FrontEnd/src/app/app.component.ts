@@ -7,11 +7,9 @@ import { Component } from '@angular/core';
       <a routerLink="/addBorrower" routerLinkActive="active">Add Borrower</a>
       <a routerLink="/search" routerLinkActive="active">Search</a>
       <a routerLink="/checkIn" routerLinkActive="active">Check In</a>
-      <a routerLink="/fine" routerLinkActive="active">Fines</a>
-      <!--<a routerLink="/login" routerLinkActive="active">Login</a>
-      <a [routerLink]="[{ outlets: { popup: ['compose'] } }]">Contact</a>-->
+      <a routerLink="/fine" routerLinkActive="active">Fines</a>      
     </nav>
     <router-outlet></router-outlet>`
   ,
 })
-export class AppComponent  { name = 'Library Management System'; }
+export class AppComponent { name = 'Library Management System'; }

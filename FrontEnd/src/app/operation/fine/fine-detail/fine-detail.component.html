@@ -1,0 +1,18 @@
+<div *ngIf="fines">
+    <table>
+        <thead>
+            <tr>
+                <th>Card Id</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let f of fines">
+                <td>{{f.cardId}}</td>
+                <td>$ {{f.totalFine}}</td>
+                <td><button (click)="payFine(f.cardId, f.totalFine)">Pay</button></td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>

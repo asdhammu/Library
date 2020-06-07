@@ -1,0 +1,11 @@
+<h3> Search Library Catalog</h3>
+
+<form (ngSubmit)="search()">
+  <div class="form-group">
+    <input type="text" size="75" class="form-control" placeholder="author,isbn,bookname" [(ngModel)]="query"
+      name="Search">
+    <button type="submit" class="btn btn-primary btn-block">Search</button>
+  </div>
+</form>
+
+<app-search-result [books]="books" (checkOut)="checkoutBook($event)"></app-search-result>

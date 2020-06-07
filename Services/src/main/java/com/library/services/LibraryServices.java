@@ -2,32 +2,31 @@ package com.library.services;
 
 import java.util.List;
 
-import com.library.model.Borrower;
-import com.library.model.Fine;
-import com.library.rest.BookLoanRequest;
-import com.library.rest.CheckInBook;
-import com.library.rest.FineResponse;
-import com.library.rest.RestResponse;
-import com.library.rest.SearchQuery;
-import com.library.rest.SearchResult;
+import com.library.dto.Book;
+import com.library.dto.Response;
+import com.library.entity.Borrower;
+import com.library.entity.Fine;
+import com.library.modal.BookLoanRequest;
+import com.library.modal.CheckInBook;
 
 public interface LibraryServices {
 
-	public RestResponse addBorrower(Borrower borrower);
+	com.library.dto.Borrower addBorrower(Borrower borrower);
 
-	public RestResponse addFine();
+	Response calculateFines();
 
-	public RestResponse payFine(int cardId);
+	Response payFine(int cardId);
 
-	public RestResponse addBookLoan(BookLoanRequest bookLoanRequest);
-
-	public List<SearchResult> search(SearchQuery query);
-
-	public List<SearchResult> searchCheckedInBooks(CheckInBook book);
+	Response addBookLoan(BookLoanRequest bookLoanRequest);
 	
-	public RestResponse checkInBook(CheckInBook book);
+	Response checkInBook(CheckInBook book);
 
-	public List<FineResponse> getAllFines();
+	List<com.library.dto.Fine> getAllFines();
 	
-	public List<Fine> getFineForCardId(SearchQuery query);
+	List<Fine> getFineForCardId(int cardId);
+
+	List<Book> searchBooks(String query, int page, int size);
+
+	List<Book> searchBooksForBorrower(String borrowerName, int cardId, String isbn);
+
 }

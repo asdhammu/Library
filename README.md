@@ -1,10 +1,8 @@
 # Library Management Project
 
-Steps:
+Prerequisites:
 
-1. Create database tables and schemas as mentioned in readme.txt in database foler.
-2. Then follow the services step as mentioned below.
-3. then follow front end steps as mentioned below.
+Create schema with name of 'librarymanagement' in MySql
 
 # For Services.:
 
@@ -14,7 +12,7 @@ cd services
 
 mvn install
 
-then deploy WAR on tomcat
+mvn spring-boot: run
 
 # For Front end:
 
@@ -24,4 +22,4 @@ cd Front end
 
 npm install
 
-npm start
+npm run start
