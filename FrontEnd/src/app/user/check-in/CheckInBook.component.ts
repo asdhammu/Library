@@ -4,7 +4,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LibraryService } from '../../services/library.services';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CheckInBook } from 'src/app/model/check-in-book';
+import { CheckInBook } from '../../model/check-in-book';
 
 @Component({
   selector: 'checkIn-book',

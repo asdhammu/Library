@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CalculateFineComponent } from './calculate-fine.component';
+import { LibraryService } from 'src/app/services/library.services';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CalculateFineComponent', () => {
   let component: CalculateFineComponent;
@@ -8,7 +11,9 @@ describe('CalculateFineComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CalculateFineComponent ]
+      declarations: [ CalculateFineComponent ],
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      providers: [LibraryService]
     })
     .compileComponents();
   }));
