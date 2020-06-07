@@ -12,11 +12,9 @@ Create schema with name of 'librarymanagement' in MySql. Run the following comma
 
  - update password value of 'spring.datasource.password' in the application-dev.properties if different from 'admin'
 
-- cd services
+ - cd services 
 
- - mvn install
-
- - mvn spring-boot: run
+ - mvn spring-boot: run ( On first run, load will be inserted to database. This may be take from 15 - 30 minutes)
 
 
 # For Front end:
