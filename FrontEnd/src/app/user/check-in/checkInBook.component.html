@@ -11,15 +11,15 @@
     </div>
 
     <div>
-      <button  type="submit" class="btn btn-primary btn-block">Check In</button>
+      <button type="submit" class="btn btn-primary btn-block">Check In</button>
     </div>
   </div>
 </form>
-
-<div *ngIf="restResponse" class="form-group">
-
-  <div [ngSwitch]=restResponse.success>
-    <b *ngSwitchCase="true">Book Checked In Successfully.</b>
-    <b *ngSwitchDefault>{{restResponse.error}}</b>
+<div *ngIf="submitted">
+  <div *ngIf="success">
+    {{msg}}
+  </div>
+  <div *ngIf="!success">
+    {{errorMsg}}
   </div>
 </div>

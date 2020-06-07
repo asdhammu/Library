@@ -26,9 +26,8 @@ export class SearchComponent {
     });
   }
 
-
-  onSubmit(isbn: string): void {
-    this.router.navigate(['/addLoan', isbn]);
+  checkoutBook(event: any) {
+    this.router.navigate(['/addLoan', event]);
   }
 
 }

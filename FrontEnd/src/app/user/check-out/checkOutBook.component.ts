@@ -15,7 +15,10 @@ export class CheckOutBookComponent implements OnInit {
 
   bookLoan = new BookLoan('', '');
   isbn: string;
-
+  msg: string;
+  errorMsg: string;
+  success: boolean;
+  submitted: boolean;
   constructor(private route: ActivatedRoute,
     private libraryService: LibraryService) {
   }
@@ -29,11 +32,17 @@ export class CheckOutBookComponent implements OnInit {
 
 
   addLoan(): void {
-
+    this.submitted = false;
     this.bookLoan.isbn = this.isbn;
 
     this.libraryService.addLoan(this.bookLoan).subscribe(x => {
-      console.log(x);
+      this.submitted = true;
+      this.success = true;
+      this.msg = x.message;
+    }, e => {
+      this.submitted = true;
+      this.success = false;
+      this.errorMsg = e.error.message;
     });
 
   }

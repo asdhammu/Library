@@ -8,33 +8,4 @@
   </div>
 </form>
 
-<div *ngIf="books">
-  Total Result : {{books.length}}
-  <div [ngSwitch]="books.length>0">
-    <b *ngSwitchCase="true">
-      <ul class="heroes">
-        <li *ngFor="let b of books">
-          <div>
-            <div [ngSwitch]="b.cover.length>0">
-              <b *ngSwitchCase="true"><span><img src="{{b.cover}}" /></span></b>
-              <b *ngSwitchDefault><span><img src="../../assets/no-image-found.jpg" /></span></b>
-            </div>
-            <span class="badge">{{b.title}}</span>
-            <span class="badge">ISBN: {{b.isbn}}</span>
-            <span class="badge"> Author:
-              <span *ngFor="let a of b.author">
-                {{a.name}},
-              </span>
-            </span>
-            <span [ngSwitch]="b.available">
-              <b *ngSwitchCase="true"><span class="avail">Available</span></b>
-              <b *ngSwitchDefault><span><span class="notAvail">Not Available</span></span></b>
-            </span>
-          </div>
-          <span><button type="submit" (click)="onSubmit(b.isbn)">Checkout</button></span>
-        </li>
-      </ul>
-    </b>
-    <b *ngSwitchDefault>No Results found.</b>
-  </div>
-</div>
+<app-search-result [books]="books" (checkOut)="checkoutBook($event)"></app-search-result>

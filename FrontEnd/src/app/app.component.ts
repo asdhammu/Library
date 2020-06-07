@@ -12,4 +12,4 @@ import { Component } from '@angular/core';
     <router-outlet></router-outlet>`
   ,
 })
-export class AppComponent  { name = 'Library Management System'; }
+export class AppComponent { name = 'Library Management System'; }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Borrower } from '../model/borrower';
 import { BookLoan } from '../model/book-loan';
-import { CheckInBookModel } from '../model/check-in-book';
+import { CheckInBook } from '../model/check-in-book';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx';
+import { Fine } from '../model/fine';
 
 
 @Injectable()
@@ -26,27 +27,26 @@ export class LibraryService {
     return this.http.post(this.apiURL + 'checkoutBook', bookLoan);
   }
 
-  addOrUpdateFine(): Observable<any> {
+  calculateFines(): Observable<any> {
     return this.http.post(this.apiURL + 'addOrUpdateFine', {});
   }
 
-  searchToCheckIn(checkIn: CheckInBookModel): Observable<any> {
+  searchToCheckIn(checkIn: CheckInBook): Observable<any> {
     return this.http.get(this.apiURL + 'searchCheckedInBooks?name=' +
       checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn);
 
   }
 
-  checkIn(isbn: string, cardId: string): Observable<any> {
-    let data = { 'isbn': isbn, 'cardId': cardId };
-    return this.http.post(this.apiURL + 'checkInBook', data);
+  checkIn(checkInBook: CheckInBook): Observable<any> {
+    return this.http.post(this.apiURL + 'checkInBook', checkInBook);
   }
 
   showFines(): Observable<any> {
     return this.http.get(this.apiURL + 'fines');
   }
 
-  payFine(cardId: number): Observable<any> {
-    return this.http.post(this.apiURL + 'payFine', cardId);
+  payFine(fine: Fine): Observable<any> {
+    return this.http.post(this.apiURL + 'payFine', fine);
   }
 
   getFineForCardId(cardId: number): Observable<any> {

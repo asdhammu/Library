@@ -1,40 +1,25 @@
 <h3>Check In Book</h3>
-
-<form (ngSubmit)="searchToCheckIn()">
-  <div class="form-group">
-
-    <label>ISBN</label>
-    <input type="text" [(ngModel)]="checkInBook.isbn" placeholder="ISBN" name="ISBN">
-    <label>Borrower ID</label>
-    <input type="text" [(ngModel)]="checkInBook.cardId" placeholder="cardId" name="Card Id">
-    <label>Name</label>
-    <input type="text" [(ngModel)]="checkInBook.name" placeholder="name" name="Name">
-    <button type="submit" class="btn btn-primary btn-block">Search</button>
-
+<span>Enter either ISBN or Card Id</span>
+<form [formGroup]="searchCheckInForm">
+  <div>
+    <label>
+      ISBN
+      <input type="text" formControlName="isbn">
+    </label>
+  </div>
+  <div>
+    <label>
+      Card Id
+      <input type="text" formControlName="cardId">
+    </label>
+  </div>
+  <div>
+    <button (click)="searchToCheckIn()">Seach</button>
   </div>
 </form>
-
-<div *ngIf="books">
-  <div [ngSwitch]="books.length>0">
-    <b *ngSwitchCase="true">
-      <ul class="heroes">
-        <li *ngFor="let b of books">
-          <div>
-            <div [ngSwitch]="b.cover.length>0">
-              <b *ngSwitchCase="true"><span><img src="{{b.cover}}" /></span></b>
-              <b *ngSwitchDefault><span><img src="../../../assets/no-image-found.jpg" /></span></b>
-            </div>
-            <span class="badge">{{b.title}}</span>
-            <span class="badge">ISBN: {{b.isbn}}</span>
-            <span [ngSwitch]="b.available">
-              <b *ngSwitchCase="true"><span class="avail">Available</span></b>
-              <b *ngSwitchDefault><span><span class="notAvail">Not Available</span></span></b>
-            </span>
-          </div>
-          <span><button type="submit" (click)="onSubmit(b.isbn,b.borrower.cardId)">CheckIn</button></span>
-        </li>
-      </ul>
-    </b>
-    <b *ngSwitchCase="false">No Books are checked out for given Query.</b>
+<div *ngIf="submitted">
+  <div *ngIf="!success">
+    {{error}}
   </div>
 </div>
+<app-search-result [books]="books" [isCheckIn]="true" (checkIn)="checkIn($event)"></app-search-result>

@@ -7,22 +7,20 @@
     </div>
     <div>
       <label>Borrower ID</label>
-      <input type="text" [(ngModel)]="bookLoan.borrowerId" placeholder="BorrowerId" name="Id"><br/>
+      <input type="text" [(ngModel)]="bookLoan.borrowerId" placeholder="BorrowerId" name="Id"><br />
     </div>
     <div>
-      <button  type="submit" class="btn btn-primary btn-block">Add Loan</button>
+      <button type="submit" class="btn btn-primary btn-block">Add Loan</button>
     </div>
   </div>
 </form>
 
-<div *ngIf="restResponse" class="form-group">
-
-  <div [ngSwitch]=restResponse.success>
-    <b *ngSwitchCase="true">Book Loan Successfully added.</b>
-    <b *ngSwitchDefault>{{restResponse.error}}</b>
+<div *ngIf="submitted">
+  <div *ngIf="success">
+    {{msg}}
   </div>
-  <!-- <div *ngIf={{restResponse.success}}>
-  Compilation Result : {{restResponse.result}}
-  <br/>
-  {{restResponse.error}} -->
+  <div *ngIf="!success">
+    {{errorMsg}}
+  </div>
+
 </div>

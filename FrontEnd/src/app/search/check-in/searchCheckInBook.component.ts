@@ -1,11 +1,12 @@
 /**
  * Created by asdha on 3/15/2017.
  */
-import { Component } from '@angular/core';
-import { CheckInBookModel } from '../../model/check-in-book';
+import { Component, OnInit } from '@angular/core';
+import { CheckInBook } from '../../model/check-in-book';
 import { LibraryService } from '../../services/library.services';
 import { Router } from '@angular/router';
 import { Book } from 'src/app/model/Book';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
 
@@ -15,25 +16,49 @@ import { Book } from 'src/app/model/Book';
 })
 
 
-export class SearchCheckInBookComponent {
+export class SearchCheckInBookComponent implements OnInit {
 
-  checkInBook = new CheckInBookModel('', '', '');
+  searchCheckInForm: FormGroup;
   books: Book[];
+  success: boolean;
+  submitted: boolean;
+  error: string;
   constructor(
     private route: Router,
-    private libraryService: LibraryService) { };
+    private libraryService: LibraryService,
+    private formBuilder: FormBuilder) { }
 
+  ngOnInit(): void {
 
-  searchToCheckIn(): void {
-    this.libraryService.searchToCheckIn(this.checkInBook).subscribe(x => {
-      this.books = x;
+    this.searchCheckInForm = this.formBuilder.group({
+      isbn: [''],
+      cardId: ['']
     });
   }
 
-  onSubmit(isbn: string, cardId: string): void {
-    this.route.navigate(['addCheckIn', isbn, cardId]);
+  searchToCheckIn() {
+    this.submitted = false;
+    if (!this.searchCheckInForm.valid) {
+      return;
+    }
+
+    const checkIn = new CheckInBook();
+    checkIn.isbn = this.searchCheckInForm.value.isbn;
+    checkIn.cardId = this.searchCheckInForm.value.cardId;
+
+    this.libraryService.searchToCheckIn(checkIn).subscribe(x => {
+      this.submitted = true;
+      this.books = x;
+    }, e => {
+      this.submitted = true;
+      this.success = false;
+      this.error = e.error.message;
+    });
   }
 
+  checkIn(event: any) {
+    this.route.navigate(['addCheckIn', event.isbn, event.cardId]);
 
+  }
 
 }

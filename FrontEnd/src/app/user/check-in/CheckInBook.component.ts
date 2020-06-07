@@ -4,6 +4,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LibraryService } from '../../services/library.services';
 import { ActivatedRoute, Params } from '@angular/router';
+import { CheckInBook } from 'src/app/model/check-in-book';
 
 @Component({
   selector: 'checkIn-book',
@@ -14,6 +15,10 @@ export class CheckInBookComponent implements OnInit {
 
   isbn: string;
   cardId: string;
+  success: boolean;
+  submitted: boolean;
+  msg: string;
+  errorMsg: string;
   constructor(private route: ActivatedRoute,
     private libraryService: LibraryService) {
   }
@@ -25,8 +30,18 @@ export class CheckInBookComponent implements OnInit {
   }
 
   checkInBook(): void {
-    this.libraryService.checkIn(this.isbn, this.cardId).subscribe(x => {
-      console.log(x);
+    this.submitted = false;
+    const checkIn = new CheckInBook();
+    checkIn.isbn = this.isbn;
+    checkIn.cardId = this.cardId;
+    this.libraryService.checkIn(checkIn).subscribe(x => {
+      this.submitted = true;
+      this.success = true;
+      this.msg = x.message;
+    }, e => {
+      this.submitted = true;
+      this.success = false;
+      this.msg = e.error.message;
     });
   }
 

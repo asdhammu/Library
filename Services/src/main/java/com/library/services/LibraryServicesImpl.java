@@ -1,14 +1,12 @@
 package com.library.services;
 
 import com.library.dto.Author;
+import com.library.dto.Response;
 import com.library.entity.Book;
 import com.library.entity.BookLoan;
 import com.library.entity.Borrower;
 import com.library.entity.Fine;
-import com.library.error.BookNotAvailableException;
-import com.library.error.BorrowerExistsException;
-import com.library.error.BorrowerThresholdException;
-import com.library.error.NoSuchBorrowerException;
+import com.library.error.*;
 import com.library.modal.*;
 import com.library.nlp.*;
 import com.library.repository.*;
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -71,36 +70,11 @@ public class LibraryServicesImpl implements LibraryServices {
         return borrowerDto;
     }
 
-    public List<FineResponse> getAllFines() {
-
-        List<Fine> fines = fineRepository.findAllFinesWithSum();
-//        Session session = this.sessionFactory.openSession();
-//        StringBuilder builder = new StringBuilder();
-//
-//        builder.append("select b.card_id , sum(fine_amt) from fine f ,book_loan b where b.loan_id= f.loan_id and f.paid=0 group by b.card_id");
-//
-//        Query query = session.createSQLQuery(builder.toString());
-
-
-//        List<Object[]> object = query.list();
-//
-//        List<FineResponse> fineResponses = new ArrayList<>();
-//
-//        for (Object[] object2 : object) {
-//            FineResponse fineResponse = new FineResponse();
-//            fineResponse.setCardId((Integer) object2[0]);
-//            fineResponse.setAmount(Double.toString((Double) object2[1]));
-//
-//            fineResponses.add(fineResponse);
-//        }
-
-        // session.close();
-
-
-        return new ArrayList<>();
+    public List<com.library.dto.Fine> getAllFines() {
+        return fineRepository.findAllFinesWithSum();
     }
 
-    public String calculateFines() {
+    public Response calculateFines() {
         List<BookLoan> bookLoans = bookLoanRepository.findAllByDateInIsNull();
         Fine fine;
         LocalDateTime date = LocalDateTime.now();
@@ -112,17 +86,17 @@ public class LibraryServicesImpl implements LibraryServices {
                 } else {
                     fine = bookLoan.getFine();
                 }
-                long daysOverDue = Duration.between(date.toLocalDate(), bookLoan.getDueDate().toLocalDate()).toDays();
+                long daysOverDue = Duration.between(bookLoan.getDueDate().toLocalDate().atStartOfDay(), date.toLocalDate().atStartOfDay()).toDays();
                 fine.setFineAmount(Double.toString(daysOverDue * 0.25));
                 fineRepository.save(fine);
             }
         }
 
-        return "All fines calculated";
+        return new Response("All fines calculated");
     }
 
     @Override
-    public String payFine(int cardId) {
+    public Response payFine(int cardId) {
         Borrower borrower = borrowerRepository.findByCardId(cardId).get();
         if (borrower == null) {
             throw new NoSuchBorrowerException("No such borrower exists");
@@ -130,18 +104,21 @@ public class LibraryServicesImpl implements LibraryServices {
 
         List<BookLoan> bookLoans = borrower.getBookLoans();
         if (bookLoans.isEmpty()) {
-            throw new BorrowerThresholdException("Borrower has loaned three books.");
+            throw new NoSuchBookLoanException("No loans for this borrower");
         }
-
+        
         for (BookLoan bookLoan : bookLoans) {
-            bookLoan.getFine().setPaid(true);
-            bookLoanRepository.save(bookLoan);
+            Optional<Fine> fine = fineRepository.findByBookLoan(bookLoan);
+            if (fine.isPresent()) {
+                fine.get().setPaid(true);
+                fineRepository.save(fine.get());
+            }
         }
-        return "Paid";
+        return new Response("Paid");
     }
 
     @Override
-    public String checkInBook(CheckInBook book) {
+    public Response checkInBook(CheckInBook book) {
         bookRepository.findById(book.getIsbn()).get();
         BookLoan bookLoan = bookLoanRepository.findByBorrowerAndBook(borrowerRepository.findByCardId(book.getCardId()).get(),
                 bookRepository.findById(book.getIsbn()).get()).get(0);
@@ -150,12 +127,12 @@ public class LibraryServicesImpl implements LibraryServices {
         book1.setAvailable(true);
         bookRepository.save(book1);
         bookLoanRepository.save(bookLoan);
-        return "Book Checked In`";
+        return new Response("Book Checked In");
 
     }
 
     @Override
-    public String addBookLoan(BookLoanRequest bookLoanRequest) {
+    public Response addBookLoan(BookLoanRequest bookLoanRequest) {
 
         String isbn = bookLoanRequest.getIsbn();
         int borrowerId = bookLoanRequest.getBorrowerId();
@@ -185,7 +162,7 @@ public class LibraryServicesImpl implements LibraryServices {
         bookLoanRepository.save(bookLoan);
         bookRepository.save(book);
 
-        return "Book checked out";
+        return new Response("Book checked out");
     }
 
 
@@ -229,8 +206,8 @@ public class LibraryServicesImpl implements LibraryServices {
 
         List<Book> bookList = borrower.get().getBookLoans().stream().filter(y -> y.getDateIn() == null).map(x -> x.getBook()).collect(Collectors.toList());
 
-        List<com.library.dto.Book> list =  mapBooksToBooksDto(bookList);
-        list.stream().forEach( x -> {
+        List<com.library.dto.Book> list = mapBooksToBooksDto(bookList);
+        list.stream().forEach(x -> {
             com.library.dto.Borrower borrower1 = new com.library.dto.Borrower();
             borrower1.setName(borrower.get().getbName());
             borrower1.setCardId(borrower.get().getCardId());

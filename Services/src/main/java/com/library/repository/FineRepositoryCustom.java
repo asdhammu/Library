@@ -1,6 +1,6 @@
 package com.library.repository;
 
-import com.library.entity.Fine;
+import com.library.dto.Fine;
 
 import java.util.List;
 

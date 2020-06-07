@@ -55,8 +55,8 @@ public class LibraryController {
     }
 
     @PostMapping(value = "/payFine")
-    public ResponseEntity<?> payFine(@RequestBody int cardId) {
-        return ResponseEntity.ok(libraryServices.payFine(cardId));
+    public ResponseEntity<?> payFine(@RequestBody FineRequest fineRequest) {
+        return ResponseEntity.ok(libraryServices.payFine(fineRequest.getCardId()));
     }
 
     @GetMapping(value = "/getFineForCardId")

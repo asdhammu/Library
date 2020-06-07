@@ -1,10 +1,7 @@
 package com.library.config;
 
 
-import com.library.error.BookNotAvailableException;
-import com.library.error.BorrowerExistsException;
-import com.library.error.BorrowerThresholdException;
-import com.library.error.NoSuchBorrowerException;
+import com.library.error.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -42,6 +39,13 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
     @ExceptionHandler(BookNotAvailableException.class)
     public final ResponseEntity<ErrorDetail> handleBookNotAvailableException(BookNotAvailableException ex, WebRequest request) {
+        ErrorDetail errorDetails = new ErrorDetail(new Date(), ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NoSuchBookLoanException.class)
+    public final ResponseEntity<ErrorDetail> handleNoSuchBookLoanException(NoSuchBookLoanException ex, WebRequest request) {
         ErrorDetail errorDetails = new ErrorDetail(new Date(), ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
