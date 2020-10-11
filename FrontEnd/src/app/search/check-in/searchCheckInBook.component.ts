@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { CheckInBook } from '../../model/check-in-book';
 import { LibraryService } from '../../services/library.services';
 import { Router } from '@angular/router';
-import { Book } from 'src/app/model/Book';
+import { Book } from 'src/app/model/book';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
