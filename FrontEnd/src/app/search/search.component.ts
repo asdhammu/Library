@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LibraryService } from '../services/library.services';
 import { Router } from '@angular/router';
-import { Book } from '../model/Book';
+import { Book } from '../model/book';
 
 @Component({
   selector: '<search-component>',
