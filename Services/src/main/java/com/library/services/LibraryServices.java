@@ -25,8 +25,4 @@ public interface LibraryServices {
 	
 	List<Fine> getFineForCardId(int cardId);
 
-	List<Book> searchBooks(String query, int page, int size);
-
-	List<Book> searchBooksForBorrower(String borrowerName, int cardId, String isbn);
-
 }

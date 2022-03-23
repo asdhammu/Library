@@ -2,6 +2,7 @@ package com.library.controller;
 
 import com.library.entity.Borrower;
 import com.library.modal.*;
+import com.library.services.BookService;
 import com.library.services.LibraryServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,9 @@ public class LibraryController {
 
     @Autowired
     LibraryServices libraryServices;
+
+    @Autowired
+    BookService bookService;
 
     @PostMapping(value = "/borrower")
     public ResponseEntity<?> addBorrower(@RequestBody BorrowerData borrowerData) {
@@ -31,12 +35,12 @@ public class LibraryController {
 
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam(name = "q") String query, @RequestParam(name = "p") int page, @RequestParam(name = "s") int size) {
-        return ResponseEntity.ok(libraryServices.searchBooks(query, page, size));
+        return ResponseEntity.ok(bookService.searchBooks(query, page, size));
     }
 
     @GetMapping(value = "/searchCheckedInBooks")
     public ResponseEntity<?> searchToCheckIn(String name, int cardId, String isbn) {
-        return ResponseEntity.ok(libraryServices.searchBooksForBorrower(name, cardId, isbn));
+        return ResponseEntity.ok(bookService.searchBooksForBorrower(name, cardId, isbn));
     }
 
     @PostMapping(value = "/checkInBook")

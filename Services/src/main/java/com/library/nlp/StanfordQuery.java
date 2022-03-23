@@ -63,15 +63,20 @@ public class StanfordQuery implements NLPQuery {
         }
 
         bookNameQuery.toString();
-        Feature feature = new Feature();
+        Feature feature;
         if(bookNameQuery.toString().isEmpty()){
-            feature.setFeatureType(FeatureType.AUTHOR);
-            feature.setQuery(authorQuery.toString());
+             feature=setFeatures(FeatureType.AUTHOR, authorQuery.toString());
         }else{
-            feature.setFeatureType(FeatureType.BOOK_NAME);
-            feature.setQuery(bookNameQuery.toString());
+             feature=setFeatures(FeatureType.BOOK_NAME, bookNameQuery.toString());
         }
+        return feature;
+    }
 
+    public Feature setFeatures(FeatureType featureType, String query)
+    {
+        Feature feature = new Feature();
+        feature.setFeatureType(featureType);
+        feature.setQuery(query);
         return feature;
     }
 

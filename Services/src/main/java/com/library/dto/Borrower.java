@@ -1,16 +1,16 @@
 package com.library.dto;
 
 public class Borrower {
-    private String name;
+    private String borrower_Name;
     private int cardId;
-    private String address;
+    private String borrower_Address;
 
     public String getName() {
-        return name;
+        return borrower_Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.borrower_Name = name;
     }
 
     public int getCardId() {
@@ -22,10 +22,10 @@ public class Borrower {
     }
 
     public String getAddress() {
-        return address;
+        return borrower_Address;
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.borrower_Address = address;
     }
 }
