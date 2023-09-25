@@ -1,7 +1,6 @@
-package com.library.modal;
+package com.library.requests;
 
-public class CheckInBook {
-
+public class CheckInBookRequest {
     public int cardId;
     public String isbn;
     public String name;

@@ -2,7 +2,7 @@ package com.library.dto;
 
 import java.util.List;
 
-public class Book {
+public class BookDTO {
 
     private String ISBN;
 
@@ -16,16 +16,16 @@ public class Book {
 
     private boolean available;
 
-    private List<Author> author;
+    private List<AuthorDTO> authorDTOS;
 
-    private Borrower borrower;
+    private BorrowerDTO borrowerDTO;
 
-    public Borrower getBorrower() {
-        return borrower;
+    public BorrowerDTO getBorrower() {
+        return borrowerDTO;
     }
 
-    public void setBorrower(Borrower borrower) {
-        this.borrower = borrower;
+    public void setBorrower(BorrowerDTO borrowerDTO) {
+        this.borrowerDTO = borrowerDTO;
     }
 
     public String getISBN() {
@@ -76,11 +76,11 @@ public class Book {
         this.available = available;
     }
 
-    public List<Author> getAuthor() {
-        return author;
+    public List<AuthorDTO> getAuthors() {
+        return authorDTOS;
     }
 
-    public void setAuthor(List<Author> author) {
-        this.author = author;
+    public void setAuthors(List<AuthorDTO> authorDTOS) {
+        this.authorDTOS = authorDTOS;
     }
 }

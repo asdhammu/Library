@@ -1,12 +1,10 @@
 package com.library.dto;
 
-public class Response {
+public class ResponseDTO {
     String message;
-
-    public Response(String msg){
+    public ResponseDTO(String msg){
         this.message = msg;
     }
-
     public String getMessage() {
         return message;
     }

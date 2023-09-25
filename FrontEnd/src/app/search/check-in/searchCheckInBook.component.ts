@@ -1,12 +1,12 @@
 /**
  * Created by asdha on 3/15/2017.
  */
-import { Component, OnInit } from '@angular/core';
-import { CheckInBook } from '../../model/check-in-book';
-import { LibraryService } from '../../services/library.services';
-import { Router } from '@angular/router';
-import { Book } from 'src/app/model/book';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {CheckInBook} from '../../model/check-in-book';
+import {LibraryService} from '../../services/library.services';
+import {Router} from '@angular/router';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {PaginatedBook} from "../../model/paginated-book";
 
 @Component({
 
@@ -19,10 +19,11 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class SearchCheckInBookComponent implements OnInit {
 
   searchCheckInForm: FormGroup;
-  books: Book[];
+  paginatedBook: PaginatedBook;
   success: boolean;
   submitted: boolean;
   error: string;
+  checkInBook: CheckInBook;
   constructor(
     private route: Router,
     private libraryService: LibraryService,
@@ -45,10 +46,10 @@ export class SearchCheckInBookComponent implements OnInit {
     const checkIn = new CheckInBook();
     checkIn.isbn = this.searchCheckInForm.value.isbn;
     checkIn.cardId = this.searchCheckInForm.value.cardId;
-
-    this.libraryService.searchToCheckIn(checkIn).subscribe(x => {
+    this.checkInBook = checkIn;
+    this.libraryService.searchToCheckIn(this.checkInBook, 0, 20).subscribe(x => {
       this.submitted = true;
-      this.books = x;
+      this.paginatedBook = x;
     }, e => {
       this.submitted = true;
       this.success = false;
@@ -58,7 +59,5 @@ export class SearchCheckInBookComponent implements OnInit {
 
   checkIn(event: any) {
     this.route.navigate(['addCheckIn', event.isbn, event.cardId]);
-
   }
-
 }

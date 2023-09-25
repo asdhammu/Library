@@ -5,15 +5,14 @@ import { Borrower } from './borrower';
  */
 export class Book {
 
-  public isbn: string;
-  public title: string;
-  public cover: string;
-  public pages: string;
-  public available: boolean;
-  public author: Author[];
+  isbn: string;
+  title: string;
+  cover: string;
+  pages: string;
+  available: boolean;
+  authors: Author[];
   borrower: Borrower;
-
-
+  concatenatedAuthors: string;
 }
 
 

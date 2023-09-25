@@ -1,25 +1,27 @@
-<h3> Add Loan for Book</h3>
-<form (ngSubmit)="checkInBook()">
-  <div class="form-group">
-    <div>
-      <label>ISBN</label>
-      {{isbn}}
-    </div>
-    <div>
-      <label>Borrower ID</label>
-      {{cardId}}
-    </div>
+<div class="container">
+  <h4> Add Loan for Book</h4>
+  <form (ngSubmit)="checkInBook()">
+    <div class="form-group">
+      <div>
+        <label>ISBN</label>
+        {{isbn}}
+      </div>
+      <div>
+        <label>Borrower ID</label>
+        {{cardId}}
+      </div>
 
-    <div>
-      <button type="submit" class="btn btn-primary btn-block">Check In</button>
+      <div>
+        <button type="submit" class="btn btn-primary btn-block">Check In</button>
+      </div>
     </div>
-  </div>
-</form>
-<div *ngIf="submitted">
-  <div *ngIf="success">
-    {{msg}}
-  </div>
-  <div *ngIf="!success">
-    {{errorMsg}}
+  </form>
+  <div *ngIf="submitted">
+    <div *ngIf="success">
+      {{msg}}
+    </div>
+    <div *ngIf="!success">
+      {{errorMsg}}
+    </div>
   </div>
 </div>

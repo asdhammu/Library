@@ -9,19 +9,13 @@ import com.library.repository.BookRepository;
 import com.library.repository.ConfigurationRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class InitialLoad {
@@ -29,18 +23,24 @@ public class InitialLoad {
 
     private static final Logger LOGGER = LogManager.getLogger(InitialLoad.class);
 
-    @Autowired
+    final
     BookRepository bookRepository;
 
-    @Autowired
+    final
     ConfigurationRepository configurationRepository;
 
-    @Autowired
+    final
     AuthorRepository authorRepository;
+
+    public InitialLoad(BookRepository bookRepository, ConfigurationRepository configurationRepository, AuthorRepository authorRepository) {
+        this.bookRepository = bookRepository;
+        this.configurationRepository = configurationRepository;
+        this.authorRepository = authorRepository;
+    }
 
     public void load() {
 
-        if(configurationRepository.findAll().size() > 0 && configurationRepository.findAll().get(0).getStatus().equals(Status.COMPLETED)){
+        if (!configurationRepository.findAll().isEmpty() && configurationRepository.findAll().get(0).getStatus().equals(Status.COMPLETED)) {
             LOGGER.info("Data has been loaded");
             return;
         }
@@ -81,15 +81,12 @@ public class InitialLoad {
         book.setCover(bookData[4]);
         book.setPublisher(bookData[5]);
         book.setPages(bookData[6]);
+        book.setAvailable(true);
         book = bookRepository.saveAndFlush(book);
         String[] names = bookData[3].split(",");
 
         Set<String> set = new HashSet<>();
-
-        for (String s : names) {
-            set.add(s);
-        }
-
+        Collections.addAll(set, names);
         try {
 
             List<Author> authorList = new ArrayList<>();
@@ -107,8 +104,7 @@ public class InitialLoad {
             }
             authorRepository.saveAll(authorList);
         } catch (Exception e) {
-            System.out.println("Book name" + book.getIsbn() + " - " + book.getTitle());
-            System.out.println(book.getAuthors());
+            LOGGER.error("Book name" + book.getIsbn() + " - " + book.getTitle());
             throw e;
         }
     }

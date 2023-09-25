@@ -1,6 +1,6 @@
 package com.library.dto;
 
-public class Author {
+public class AuthorDTO {
 
     private String name;
 

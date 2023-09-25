@@ -1,11 +1,11 @@
-<h3> Search Library Catalog</h3>
-
-<form (ngSubmit)="search()">
-  <div class="form-group">
-    <input type="text" size="75" class="form-control" placeholder="author,isbn,bookname" [(ngModel)]="query"
-      name="Search">
-    <button type="submit" class="btn btn-primary btn-block">Search</button>
-  </div>
-</form>
-
-<app-search-result [books]="books" (checkOut)="checkoutBook($event)"></app-search-result>
+<div class="container">
+  <h4> Search Library Catalog</h4>
+  <form [formGroup]="searchForm">
+    <mat-form-field>
+      <mat-label>Search</mat-label>
+      <input matInput formControlName="query">
+    </mat-form-field>
+    <button class="ms-2" mat-raised-button type="submit" (click)="search()" >Search</button>
+  </form>
+  <app-search-result [paginatedBook]="paginatedBook" [query]="query" (checkOut)="checkoutBook($event)"></app-search-result>
+</div>

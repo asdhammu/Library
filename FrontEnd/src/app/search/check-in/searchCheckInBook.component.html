@@ -1,25 +1,27 @@
-<h3>Check In Book</h3>
-<span>Enter either ISBN or Card Id</span>
-<form [formGroup]="searchCheckInForm">
-  <div>
-    <label>
-      ISBN
-      <input type="text" formControlName="isbn">
-    </label>
-  </div>
-  <div>
-    <label>
-      Card Id
-      <input type="text" formControlName="cardId">
-    </label>
-  </div>
-  <div>
-    <button (click)="searchToCheckIn()">Seach</button>
-  </div>
-</form>
-<div *ngIf="submitted">
-  <div *ngIf="!success">
-    {{error}}
-  </div>
+<div class="container">
+  <h4>Check In Book</h4>
+  <span>Enter either ISBN or Card Id</span>
+  <form [formGroup]="searchCheckInForm">
+    <p>
+      <mat-form-field>
+        <mat-label>ISBN</mat-label>
+        <input matInput type="text" formControlName="isbn">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <mat-label>Card Id</mat-label>
+        <input matInput type="text" formControlName="cardId">
+      </mat-form-field>
+    </p>
+    <p>
+      <button mat-raised-button (click)="searchToCheckIn()">Search</button>
+    </p>
+    <div *ngIf="submitted">
+      <div *ngIf="!success">
+        {{error}}
+      </div>
+    </div>
+  </form>
+  <app-search-result [paginatedBook]="paginatedBook" [checkInBook]="checkInBook" [isCheckIn]="true" (checkIn)="checkIn($event)"></app-search-result>
 </div>
-<app-search-result [books]="books" [isCheckIn]="true" (checkIn)="checkIn($event)"></app-search-result>

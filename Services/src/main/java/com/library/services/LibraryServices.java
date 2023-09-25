@@ -1,32 +1,31 @@
 package com.library.services;
 
-import java.util.List;
+import com.library.dto.*;
+import com.library.requests.BookLoanRequest;
+import com.library.requests.CheckInBookRequest;
+import com.library.requests.CreateBorrowerRequest;
+import org.springframework.data.domain.Pageable;
 
-import com.library.dto.Book;
-import com.library.dto.Response;
-import com.library.entity.Borrower;
-import com.library.entity.Fine;
-import com.library.modal.BookLoanRequest;
-import com.library.modal.CheckInBook;
+import java.util.List;
 
 public interface LibraryServices {
 
-	com.library.dto.Borrower addBorrower(Borrower borrower);
+    BorrowerDTO addBorrower(CreateBorrowerRequest createBorrowerRequest);
 
-	Response calculateFines();
+    ResponseDTO calculateFines();
 
-	Response payFine(int cardId);
+    ResponseDTO payFine(int cardId);
 
-	Response addBookLoan(BookLoanRequest bookLoanRequest);
-	
-	Response checkInBook(CheckInBook book);
+    ResponseDTO addBookLoan(BookLoanRequest bookLoanRequest);
 
-	List<com.library.dto.Fine> getAllFines();
-	
-	List<Fine> getFineForCardId(int cardId);
+    ResponseDTO checkInBook(CheckInBookRequest book);
 
-	List<Book> searchBooks(String query, int page, int size);
+    List<FineDTO> getAllFines();
 
-	List<Book> searchBooksForBorrower(String borrowerName, int cardId, String isbn);
+    List<FineDTO> getFineForCardId(int cardId);
+
+    BookPaginatedDTO searchBooks(String query, Pageable pageable);
+
+    BookPaginatedDTO searchBooksForBorrower(String borrowerName, int cardId, String isbn, Pageable pageable);
 
 }

@@ -1,10 +1,16 @@
-package com.library.modal;
+package com.library.requests;
 
-public class BorrowerData {
+import jakarta.validation.constraints.NotNull;
 
+public class CreateBorrowerRequest {
+
+    @NotNull(message = "name is required")
     private String name;
+    @NotNull(message = "address is required")
     private String address;
+    @NotNull(message = "phone is required")
     private String phone;
+    @NotNull(message = "ssn is required")
     private String ssn;
 
     public String getName() {

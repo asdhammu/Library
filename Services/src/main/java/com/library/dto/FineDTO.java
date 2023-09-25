@@ -1,11 +1,11 @@
 package com.library.dto;
 
-public class Fine {
+public class FineDTO {
 
     int cardId;
-    long totalFine;
+    float totalFine;
 
-    public Fine(int cardId, long totalFine){
+    public FineDTO(int cardId, float totalFine){
         this.cardId = cardId;
         this.totalFine = totalFine;
     }
@@ -18,11 +18,11 @@ public class Fine {
         this.cardId = cardId;
     }
 
-    public long getTotalFine() {
+    public float getTotalFine() {
         return totalFine;
     }
 
-    public void setTotalFine(long totalFine) {
+    public void setTotalFine(float totalFine) {
         this.totalFine = totalFine;
     }
 }

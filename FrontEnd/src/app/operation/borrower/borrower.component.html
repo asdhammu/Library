@@ -1,39 +1,39 @@
-<h3> Add Borrower</h3>
-<form [formGroup]="borrowerForm">
-  <div>
-    <label>
-      NAME
-      <input type="text" formControlName="name">
-    </label>
-  </div>
-  <div>
-    <label>
-      SSN
-      <input type="text" formControlName="ssn">
-    </label>
-  </div>
-  <div>
-    <label>
-      Address
-      <input type="text" formControlName="address">
-    </label>
-  </div>
-  <div>
-    <label>
-      Phone
-      <input type="text" formControlName="phone">
-    </label>
-  </div>
-  <div>
-    <button mat-stroked-button (click)="addBorrower()">Add Borrower</button>
-  </div>
-</form>
+<div class="container">
+  <h4> Add Borrower</h4>
+  <form [formGroup]="borrowerForm">
+    <p>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <mat-label>SSN</mat-label>
+        <input matInput formControlName="ssn">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address">
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field>
+        <mat-label>Phone</mat-label>
+        <input matInput type="text" formControlName="phone">
+      </mat-form-field>
+    </p>
+    <button mat-raised-button (click)="addBorrower()">Add Borrower</button>
+  </form>
 
-<div *ngIf="submitted">
-  <div *ngIf="success">
-    {{msg}}
-  </div>
-  <div *ngIf="!success">
-    {{errorMsg}}
+  <div *ngIf="submitted">
+    <div *ngIf="success">
+      {{msg}}
+    </div>
+    <div *ngIf="!success">
+      {{errorMsg}}
+    </div>
   </div>
 </div>

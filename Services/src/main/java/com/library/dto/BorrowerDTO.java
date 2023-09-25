@@ -1,6 +1,6 @@
 package com.library.dto;
 
-public class Borrower {
+public class BorrowerDTO {
     private String name;
     private int cardId;
     private String address;

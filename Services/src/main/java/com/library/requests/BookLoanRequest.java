@@ -1,4 +1,4 @@
-package com.library.modal;
+package com.library.requests;
 
 public class BookLoanRequest {
 

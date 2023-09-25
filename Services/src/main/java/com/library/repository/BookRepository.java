@@ -1,5 +1,6 @@
 package com.library.repository;
 
+import com.library.entity.Author;
 import com.library.entity.Book;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface BookRepository extends JpaRepository<Book, String> {
     Optional<Book> findById(String isbn);
 
     Page<Book> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
+
+    Page<Book> findAllByAuthorsIn(List<Author> authors, Pageable pageable);
 }

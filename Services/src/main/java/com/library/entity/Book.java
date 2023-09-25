@@ -1,16 +1,9 @@
 package com.library.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +38,10 @@ public class Book implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "books")
     List<Author> authors = new ArrayList<>();
 
-    /*@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "borrowers")
-    List<Borrower> borrowers = new ArrayList<>();*/
-
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookLoan> bookLoan = new ArrayList<>();
 
-    public Book(){
+    public Book() {
 
     }
 
