@@ -1,6 +1,6 @@
 # Library Management Project
 
-###Prerequisites
+### Prerequisites
 
 - Node 16+
 - Java 17+ 
@@ -15,7 +15,7 @@
   - For full data change file name to book.csv in the InitialLoad. This can take around 30 minutes.
 
 
-### Front end: 
+### Front end 
 - cd FrontEnd
 - npm install
 - npm run start
