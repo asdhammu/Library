@@ -7,7 +7,7 @@
     "start": "ng serve --live-reload false -c development",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false --browsers=ChromeHeadless --codeCoverage=true --sourceMap=true --reporters=junit"
+    "test": "ng test --watch=false --browsers=ChromeHeadless"
   },
   "keywords": [],
   "author": "",
@@ -32,13 +32,19 @@
     "@angular-devkit/build-angular": "^16.2.3",
     "@angular/cli": "~16.2.3",
     "@angular/compiler-cli": "^16.2.0",
-    "@types/jasmine": "~4.3.0",
-    "jasmine-core": "~4.6.0",
+    "@types/node": "^16.11.35",
+    "copyfiles": "^2.4.1",
+    "jasmine-marbles": "~0.9.2",
+    "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "protractor": "~7.0.0",
+    "ts-node": "~10.9.0",
+    "@types/jasmine": "~4.3.0",
+    "jasmine-core": "~4.6.0",
     "typescript": "~5.1.3"
   }
 }

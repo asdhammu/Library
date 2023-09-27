@@ -1,6 +1,6 @@
 import { AppComponent } from './app.component';
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By }           from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -11,7 +11,7 @@ describe('AppComponent', function () {
   let comp: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  beforeEach(async(() => {
+  beforeEach((() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
