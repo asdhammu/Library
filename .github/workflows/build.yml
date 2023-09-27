@@ -31,13 +31,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: FrontEnd/package-lock.json
-      - run: |
+      - name: Install dependencies
+        run: |
           cd FrontEnd
           npm i
-      - run: |
+      - name: Build
+        run: |
           cd FrontEnd
           npm run build --if-present
-      - run: |
+      - name: Tests
+        run: |
           cd FrontEnd
           npm test
 
