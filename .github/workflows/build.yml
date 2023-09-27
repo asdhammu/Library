@@ -16,7 +16,7 @@ on:
 
 jobs:
   ui-build:
-    
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: FrontEnd/package-lock.json
       - run: |
           cd FrontEnd
           npm run build --if-present
