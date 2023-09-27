@@ -1,7 +1,7 @@
 package com.library.config;
 
 
-import com.library.error.*;
+import com.library.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

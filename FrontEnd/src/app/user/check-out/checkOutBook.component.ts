@@ -1,11 +1,12 @@
 /**
  * Created by asdha on 3/15/2017.
  */
-import { Component, OnInit } from '@angular/core';
-import { BookLoan } from '../../model/book-loan';
-import { LibraryService } from '../../services/library.services';
-import { ActivatedRoute, Params } from '@angular/router';
-import 'rxjs/add/operator/switchMap';
+import {Component, OnInit} from '@angular/core';
+import {BookLoan} from '../../model/book-loan';
+import {LibraryService} from '../../services/library.services';
+import {ActivatedRoute, Params} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+
 @Component({
   selector: 'checkout-book',
   templateUrl: './checkOutBook.component.html',
@@ -19,22 +20,25 @@ export class CheckOutBookComponent implements OnInit {
   errorMsg: string;
   success: boolean;
   submitted: boolean;
+  addLoanForm: FormGroup;
+
   constructor(private route: ActivatedRoute,
-    private libraryService: LibraryService) {
+              private libraryService: LibraryService,
+              private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
-
+    this.addLoanForm = this.formBuilder.group({
+      borrowerId: ['', Validators.required]
+    });
     this.route.params.subscribe((params: Params) => this.isbn = params['isbn']);
-    console.log(this.isbn);
-
   }
 
 
   addLoan(): void {
     this.submitted = false;
     this.bookLoan.isbn = this.isbn;
-
+    this.bookLoan.borrowerId = this.addLoanForm.value.borrowerId;
     this.libraryService.addLoan(this.bookLoan).subscribe(x => {
       this.submitted = true;
       this.success = true;

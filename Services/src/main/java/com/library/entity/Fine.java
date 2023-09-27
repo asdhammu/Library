@@ -1,6 +1,7 @@
 package com.library.entity;
 
-import javax.persistence.*;
+import com.library.dto.FineDTO;
+import jakarta.persistence.*;
 
 
 @Entity
@@ -8,7 +9,7 @@ import javax.persistence.*;
 @SqlResultSetMapping(
         name = "resultMapper",
         classes = {
-                @ConstructorResult(targetClass = com.library.dto.Fine.class,
+                @ConstructorResult(targetClass = FineDTO.class,
                         columns = {
                                 @ColumnResult(name = "cardId", type = Integer.class),
                                 @ColumnResult(name = "totalFine", type = Long.class)
@@ -26,7 +27,7 @@ public class Fine {
     private BookLoan bookLoan;
 
     @Column(name = "fine_amt")
-    private String fineAmount;
+    private float fineAmount;
 
     @Column(name = "paid")
     private boolean paid;
@@ -46,11 +47,11 @@ public class Fine {
         this.fineId = fineId;
     }
 
-    public String getFineAmount() {
+    public float getFineAmount() {
         return fineAmount;
     }
 
-    public void setFineAmount(String fineAmount) {
+    public void setFineAmount(float fineAmount) {
         this.fineAmount = fineAmount;
     }
 

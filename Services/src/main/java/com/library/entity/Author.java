@@ -1,19 +1,8 @@
 package com.library.entity;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +22,6 @@ public class Author implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
     @ManyToMany
     @JoinTable(name = "author_book", joinColumns = {@JoinColumn(name = "authorId")}, inverseJoinColumns = {@JoinColumn(name = "isbn")})
     List<Book> books = new ArrayList<>();

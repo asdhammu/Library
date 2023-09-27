@@ -1,35 +1,23 @@
-<div *ngIf="books">
-    Total Result : {{books.length}}
-    <div [ngSwitch]="books.length>0">
-      <b *ngSwitchCase="true">
-        <ul class="heroes">
-          <li *ngFor="let b of books">
-            <div>
-              <div [ngSwitch]="b.cover.length>0">
-                <b *ngSwitchCase="true"><span><img src="{{b.cover}}" /></span></b>
-                <b *ngSwitchDefault><span><img src="../../assets/no-image-found.jpg" /></span></b>
-              </div>
-              <span class="badge">{{b.title}}</span>
-              <span class="badge">ISBN: {{b.isbn}}</span>
-              <span class="badge" *ngIf="!isCheckIn"> Author:
-                <span *ngFor="let a of b.author">
-                  {{a.name}},
-                </span>
-              </span>
-              <span [ngSwitch]="b.available">
-                <b *ngSwitchCase="true"><span class="avail">Available</span></b>
-                <b *ngSwitchDefault><span><span class="notAvail">Not Available</span></span></b>
-              </span>
-            </div>                        
-            <span *ngIf="!isCheckIn">
-              <button type="submit" (click)="checkOutEmit(b.isbn)">Checkout</button>
-            </span>
-            <span *ngIf="isCheckIn">
-              <button type="submit" (click)="checkInEmit(b.isbn,b.borrower.cardId)">CheckIn</button>
-            </span>
-          </li>
-        </ul>
-      </b>
-      <b *ngSwitchDefault>No Results found.</b>
-    </div>
+<div *ngIf="paginatedBook">
+  <span>Total Result : {{paginatedBook.pagination.totalCount}}</span>
+  <div *ngIf="paginatedBook.books.length <= 0">No Results found</div>
+  <div *ngIf="paginatedBook.books.length > 0">
+    <mat-card *ngFor="let b of paginatedBook.books" class="my-2">
+      <mat-card-header>
+        <mat-card-title><h4>{{b.title}}</h4></mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div>ISBN : {{b.isbn}}</div>
+        <div>
+          Authors: <span>{{b.concatenatedAuthors}}</span>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="checkOutEmit(b.isbn)" *ngIf="!isCheckIn">Checkout</button>
+        <button mat-raised-button (click)="checkInEmit(b.isbn, b.borrower.cardId)" *ngIf="isCheckIn">Check In</button>
+      </mat-card-actions>
+    </mat-card>
+    <mat-paginator #paginator [length]="paginatedBook.pagination.totalCount" [pageSize]="paginatedBook.pagination.size" [pageSizeOptions]="[5,10,25,100]"
+    (page)="fetchNext($event)"></mat-paginator>
   </div>
+</div>

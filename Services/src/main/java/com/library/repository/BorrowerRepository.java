@@ -14,8 +14,4 @@ public interface BorrowerRepository extends JpaRepository<Borrower, Integer> {
 
     Optional<Borrower> findByCardId(int cardId);
 
-    List<Borrower> findByCardIdOrBNameIgnoreCaseContaining(int cardId, String name);
-
-    List<Borrower> findByBNameIgnoreCaseContaining(String name);
-
 }

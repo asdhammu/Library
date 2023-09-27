@@ -1,6 +1,8 @@
-import { Component, OnInit, Input, Output } from '@angular/core';
-import { Book } from 'src/app/model/book';
-import { EventEmitter } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {PaginatedBook} from "../../model/paginated-book";
+import {PageEvent} from "@angular/material/paginator";
+import {LibraryService} from "../../services/library.services";
+import {CheckInBook} from "../../model/check-in-book";
 
 @Component({
   selector: 'app-search-result',
@@ -8,13 +10,15 @@ import { EventEmitter } from '@angular/core';
   styleUrls: ['./search-result.component.css']
 })
 export class SearchResultComponent implements OnInit {
-
-  @Input() books: Book[];
+  @Input() paginatedBook: PaginatedBook;
   @Input() isCheckIn: boolean;
-
+  @Input() checkInBook: CheckInBook;
+  @Input() query: string;
   @Output() checkOut = new EventEmitter();
   @Output() checkIn = new EventEmitter();
-  constructor() { }
+
+  constructor(private libraryService: LibraryService) {
+  }
 
   ngOnInit() {
   }
@@ -28,6 +32,19 @@ export class SearchResultComponent implements OnInit {
 
   checkOutEmit(isbn) {
     this.checkOut.emit(isbn);
+  }
+
+  fetchNext($event: PageEvent) {
+    if (!this.isCheckIn) {
+      this.libraryService.search(this.query, $event.pageIndex, $event.pageSize).subscribe(x => {
+        this.paginatedBook = x;
+      })
+    } else {
+      this.libraryService.searchToCheckIn(this.checkInBook, $event.pageIndex, $event.pageSize).subscribe(x => {
+        this.paginatedBook = x;
+      })
+    }
+
   }
 }
 

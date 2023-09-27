@@ -1,16 +1,19 @@
-import { Injectable } from '@angular/core';
-import { Borrower } from '../model/borrower';
-import { BookLoan } from '../model/book-loan';
-import { CheckInBook } from '../model/check-in-book';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Rx';
-import { Fine } from '../model/fine';
+import {Injectable} from '@angular/core';
+import {Borrower} from '../model/borrower';
+import {BookLoan} from '../model/book-loan';
+import {CheckInBook} from '../model/check-in-book';
+import {HttpClient} from '@angular/common/http';
+import {map, Observable} from 'rxjs';
+import {Fine} from '../model/fine';
+import {Book} from "../model/book";
+import {PaginatedBook} from "../model/paginated-book";
+import {environment} from "../../environments/environment";
 
 
 @Injectable()
 export class LibraryService {
 
-  private apiURL = 'http://localhost:8080/';
+  private apiURL = environment.apiUrl;
 
   constructor(private http: HttpClient) {
   }
@@ -19,26 +22,56 @@ export class LibraryService {
     return this.http.post(this.apiURL + 'borrower', borrower);
   }
 
-  search(searchQuery: string): Observable<any> {
-    return this.http.get(this.apiURL + 'search?q=' + searchQuery + '&p=0&s=10');
+  search(searchQuery: string, page: number, size: number): Observable<PaginatedBook> {
+    return this.http.get<PaginatedBook>(this.apiURL + 'search/books?q=' + searchQuery + '&page=' + page + '&size=' + size)
+      .pipe(map(paginatedBook => {
+        return this.mapPaginatedBookData(paginatedBook);
+      }));
+  }
+
+  private mapPaginatedBookData(paginatedBook: PaginatedBook) {
+    let books = paginatedBook.books.map(b => {
+      const book = new Book();
+      book.authors = b.authors;
+      book.isbn = b.isbn;
+      book.concatenatedAuthors = b.authors.map(z => z.name).join(", ")
+      book.cover = b.cover;
+      book.title = b.title;
+      book.pages = b.pages;
+      book.available = b.available;
+      if(b.borrower){
+        const borrower = new Borrower();
+        borrower.cardId = b.borrower.cardId;
+        borrower.name = b.borrower.name;
+        book.borrower = borrower;
+      }
+      return book;
+    });
+    let page = paginatedBook.pagination;
+    const paginated = new PaginatedBook();
+    paginated.pagination = page;
+    paginated.books = books;
+    return paginated;
   }
 
   addLoan(bookLoan: BookLoan): Observable<any> {
-    return this.http.post(this.apiURL + 'checkoutBook', bookLoan);
+    return this.http.post(this.apiURL + 'borrower/checkout', bookLoan);
   }
 
   calculateFines(): Observable<any> {
-    return this.http.post(this.apiURL + 'addOrUpdateFine', {});
+    return this.http.post(this.apiURL + 'fine/calculate', {});
   }
 
-  searchToCheckIn(checkIn: CheckInBook): Observable<any> {
-    return this.http.get(this.apiURL + 'searchCheckedInBooks?name=' +
-      checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn);
-
+  searchToCheckIn(checkIn: CheckInBook, page: number, size: number): Observable<PaginatedBook> {
+    return this.http.get<PaginatedBook>(this.apiURL + 'search/borrower?name=' +
+      checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn + '&page=' + page + '&size=' + size)
+      .pipe(map(paginatedBook => {
+        return this.mapPaginatedBookData(paginatedBook);
+      }));
   }
 
   checkIn(checkInBook: CheckInBook): Observable<any> {
-    return this.http.post(this.apiURL + 'checkInBook', checkInBook);
+    return this.http.post(this.apiURL + 'borrower/checkIn', checkInBook);
   }
 
   showFines(): Observable<any> {
@@ -46,11 +79,11 @@ export class LibraryService {
   }
 
   payFine(fine: Fine): Observable<any> {
-    return this.http.post(this.apiURL + 'payFine', fine);
+    return this.http.post(this.apiURL + 'fine', fine);
   }
 
   getFineForCardId(cardId: number): Observable<any> {
-    return this.http.get(this.apiURL + 'getFineForCardId?cardId=' + cardId);
+    return this.http.get(this.apiURL + 'fine?cardId=' + cardId);
   }
 
 }

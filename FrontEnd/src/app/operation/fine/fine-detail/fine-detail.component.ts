@@ -17,7 +17,6 @@ export class FineDetailComponent implements OnInit {
     private route: Router) { }
 
   ngOnInit() {
-
     this.libraryService.showFines().subscribe(x => {
       this.success = true;
       this.fines = x;
@@ -28,7 +27,7 @@ export class FineDetailComponent implements OnInit {
       });
   }
 
-  payFine(cardId: number, amount: number) {
+  payFine(cardId: number, amount: string) {
     this.route.navigate(['fine/pay', cardId], {queryParams: {amount: amount}});
   }
 
