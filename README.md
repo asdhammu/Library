@@ -2,7 +2,7 @@
 
 ###Prerequisites
 
-- Node 14+
+- Node 16+
 - Java 17+ 
 - Create schema with name of 'librarymanagement' in MySql
  
