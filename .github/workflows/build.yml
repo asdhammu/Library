@@ -33,6 +33,9 @@ jobs:
           cache-dependency-path: FrontEnd/package-lock.json
       - run: |
           cd FrontEnd
+          npm i
+      - run: |
+          cd FrontEnd
           npm run build --if-present
       - run: |
           cd FrontEnd
