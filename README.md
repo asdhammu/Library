@@ -1,25 +1,21 @@
 # Library Management Project
 
-Prerequisites:
+###Prerequisites
 
-Create schema with name of 'librarymanagement' in MySql. Run the following command in mysql command line
-
- - create schema librarymanagement
- - git clone https://github.com/asdhammu/Library.git
+- Node 14+
+- Java 17+ 
+- Create schema with name of 'librarymanagement' in MySql
  
-# For Services.: 
+### Service 
 
- - update password value of 'spring.datasource.password' in the application-dev.properties if different from 'admin'
+- update username and password value of 'spring.datasource.username' and 'spring.datasource.password' in the application-dev.properties
+- cd services
+- mvn spring-boot: run
+  - Data will load from books-lite.csv in the resources folder. 
+  - For full data change file name to book.csv in the InitialLoad. This can take around 30 minutes.
 
- - cd services 
 
- - mvn spring-boot: run ( On first run, load will be inserted to database. This may be take from 15 - 30 minutes)
-
-
-# For Front end: 
-
- - cd FrontEnd
-
- - npm install
-
- - npm run start
+### Front end: 
+- cd FrontEnd
+- npm install
+- npm run start
