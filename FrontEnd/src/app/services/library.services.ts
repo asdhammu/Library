@@ -7,12 +7,13 @@ import {map, Observable} from 'rxjs';
 import {Fine} from '../model/fine';
 import {Book} from "../model/book";
 import {PaginatedBook} from "../model/paginated-book";
+import {environment} from "../../environments/environment";
 
 
 @Injectable()
 export class LibraryService {
 
-  private apiURL = 'http://localhost:8080/';
+  private apiURL = environment.apiUrl;
 
   constructor(private http: HttpClient) {
   }
@@ -22,7 +23,7 @@ export class LibraryService {
   }
 
   search(searchQuery: string, page: number, size: number): Observable<PaginatedBook> {
-    return this.http.get<PaginatedBook>(this.apiURL + 'search?q=' + searchQuery + '&page=' + page + '&size=' + size)
+    return this.http.get<PaginatedBook>(this.apiURL + 'search/books?q=' + searchQuery + '&page=' + page + '&size=' + size)
       .pipe(map(paginatedBook => {
         return this.mapPaginatedBookData(paginatedBook);
       }));
@@ -54,15 +55,15 @@ export class LibraryService {
   }
 
   addLoan(bookLoan: BookLoan): Observable<any> {
-    return this.http.post(this.apiURL + 'checkoutBook', bookLoan);
+    return this.http.post(this.apiURL + 'borrower/checkout', bookLoan);
   }
 
   calculateFines(): Observable<any> {
-    return this.http.post(this.apiURL + 'addOrUpdateFine', {});
+    return this.http.post(this.apiURL + 'fine/calculate', {});
   }
 
   searchToCheckIn(checkIn: CheckInBook, page: number, size: number): Observable<PaginatedBook> {
-    return this.http.get<PaginatedBook>(this.apiURL + 'searchCheckedInBooks?name=' +
+    return this.http.get<PaginatedBook>(this.apiURL + 'search/borrower?name=' +
       checkIn.name + '&cardId=' + checkIn.cardId + '&isbn=' + checkIn.isbn + '&page=' + page + '&size=' + size)
       .pipe(map(paginatedBook => {
         return this.mapPaginatedBookData(paginatedBook);
@@ -70,7 +71,7 @@ export class LibraryService {
   }
 
   checkIn(checkInBook: CheckInBook): Observable<any> {
-    return this.http.post(this.apiURL + 'checkInBook', checkInBook);
+    return this.http.post(this.apiURL + 'borrower/checkIn', checkInBook);
   }
 
   showFines(): Observable<any> {
@@ -78,11 +79,11 @@ export class LibraryService {
   }
 
   payFine(fine: Fine): Observable<any> {
-    return this.http.post(this.apiURL + 'payFine', fine);
+    return this.http.post(this.apiURL + 'fine', fine);
   }
 
   getFineForCardId(cardId: number): Observable<any> {
-    return this.http.get(this.apiURL + 'getFineForCardId?cardId=' + cardId);
+    return this.http.get(this.apiURL + 'fine?cardId=' + cardId);
   }
 
 }

@@ -1,6 +1,6 @@
 package com.library.nlp;
 
-import com.library.services.LibraryServicesImpl;
+import com.library.services.BorrowerServiceImpl;
 import edu.stanford.nlp.ie.AbstractSequenceClassifier;
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -20,7 +20,7 @@ public class StanfordQuery implements NLPQuery {
     public StanfordQuery() {
         try {
             LOGGER.debug("Classifier loading started");
-            ClassLoader classLoader = LibraryServicesImpl.class.getClassLoader();
+            ClassLoader classLoader = BorrowerServiceImpl.class.getClassLoader();
             File file = new File(classLoader.getResource("nlp/english.all.3class.distsim.crf.ser.gz").getFile());
             this.classifier = CRFClassifier.getClassifier(file);
             LOGGER.debug("Classifier loaded successfully");

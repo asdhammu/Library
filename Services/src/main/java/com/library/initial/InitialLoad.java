@@ -7,6 +7,7 @@ import com.library.modal.Status;
 import com.library.repository.AuthorRepository;
 import com.library.repository.BookRepository;
 import com.library.repository.ConfigurationRepository;
+import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ import java.io.IOException;
 import java.util.*;
 
 @Service
+@Transactional
 public class InitialLoad {
-
 
     private static final Logger LOGGER = LogManager.getLogger(InitialLoad.class);
 
@@ -51,7 +52,7 @@ public class InitialLoad {
         String line;
         try {
             ClassLoader classLoader = InitialLoad.class.getClassLoader();
-            bufferedReader = new BufferedReader(new FileReader(classLoader.getResource("books.csv").getFile()));
+            bufferedReader = new BufferedReader(new FileReader(classLoader.getResource("books-lite.csv").getFile()));
             Configuration configuration = new Configuration();
             configuration.setStatus(Status.COMPLETED);
             configurationRepository.save(configuration);
